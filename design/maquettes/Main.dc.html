@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Foulala · Manifs à Lyon</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Figtree:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #F7F6FB; color: #1D1A33; font-family: 'Figtree', system-ui, sans-serif; overflow: hidden">
+
+  <header style="padding: 20px 20px 4px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div style="display: flex; align-items: center; gap: 8px">
+        <svg width="36" height="32" viewBox="0 0 64 56" aria-hidden="true"><circle cx="17" cy="26" r="14" fill="#FFC531"></circle><circle cx="47" cy="26" r="14" fill="#49A8FF"></circle><path d="M32 5c-9.4 0-17 7.4-17 16.6C15 34 32 51 32 51s17-17 17-29.4C49 12.4 41.4 5 32 5z" fill="#FF5FA2" stroke="#F7F6FB" stroke-width="3.5" stroke-linejoin="round"></path><circle cx="32" cy="21.6" r="6" fill="#FFFFFF"></circle></svg>
+        <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 26px; letter-spacing: -0.04em">fou<span style="color: #E0357C">lala</span></span>
+      </div>
+      <button type="button" aria-label="Changer de ville, ville actuelle : Lyon" style="height: 44px; padding: 0 14px 0 12px; display: flex; align-items: center; gap: 6px; border: none; border-radius: 22px; background: #FFFFFF; color: #1D1A33; font-family: 'Figtree', sans-serif; font-weight: 700; font-size: 16px; box-shadow: 0 1px 3px rgba(29,26,51,0.12); cursor: pointer">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF5FA2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>
+        Lyon
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+      </button>
+    </div>
+    <h1 style="margin: 4px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 38px; line-height: 1; letter-spacing: -0.03em">Manifs à Lyon</h1>
+    <p style="margin: 0; font-size: 15px; line-height: 1.4; color: #5D5A72">Choisissez une ville : l'app n'a pas besoin de votre position pour lister les manifs.</p>
+  </header>
+
+  <div role="group" aria-label="Filtrer par cause" style="flex: none; display: flex; gap: 8px; padding: 12px 20px 4px; overflow: hidden; white-space: nowrap">
+    <button type="button" aria-pressed="true" style="flex: none; height: 44px; padding: 0 16px; border-radius: 22px; border: none; background: #1D1A33; color: #FFFFFF; font-family: 'Figtree', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer">Toutes</button>
+    <button type="button" aria-pressed="false" style="flex: none; height: 44px; padding: 0 14px 0 10px; border-radius: 22px; border: none; background: #E3F6EA; color: #0E5C3D; display: flex; align-items: center; gap: 6px; font-family: 'Figtree', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#17855A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15"></path><path d="M5 19c3-4 6-7 10-9"></path></svg>Climat</button>
+    <button type="button" aria-pressed="false" style="flex: none; height: 44px; padding: 0 14px 0 10px; border-radius: 22px; border: none; background: #F0E8FF; color: #4A1FA0; display: flex; align-items: center; gap: 6px; font-family: 'Figtree', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer"><svg width="20" height="18" viewBox="0 0 24 20" fill="none" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M2 18a10 10 0 0 1 20 0" stroke="#E8413C"></path><path d="M5 18a7 7 0 0 1 14 0" stroke="#F7932E"></path><path d="M8 18a4 4 0 0 1 8 0" stroke="#3BB26A"></path><path d="M11 18a1 1 0 0 1 2 0" stroke="#2F7FE0"></path></svg>Fiertés</button>
+    <button type="button" aria-pressed="false" style="flex: none; height: 44px; padding: 0 14px 0 10px; border-radius: 22px; border: none; background: #E4EEFF; color: #174DA8; display: flex; align-items: center; gap: 6px; font-family: 'Figtree', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1F64D6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18M12 12l-6.4 6.4M12 12l6.4 6.4"></path></svg>Paix</button>
+    <button type="button" aria-pressed="false" style="flex: none; height: 44px; padding: 0 14px 0 10px; border-radius: 22px; border: none; background: #FFE7E3; color: #A3241C; display: flex; align-items: center; gap: 6px; font-family: 'Figtree', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D2362B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4h3l8 4.5V5.5L6 10H3z"></path><path d="M17.5 9a4 4 0 0 1 0 6"></path></svg>Social</button>
+  </div>
+
+  <main style="flex: 1; min-height: 0; overflow: hidden; padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 10px">
+    <h2 style="margin: 2px 4px 0; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #5D5A72">En ce moment</h2>
+
+    <a href="Detail.dc.html" style="position: relative; flex: none; overflow: hidden; display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 26px; background: #17855A; color: #FFFFFF; text-decoration: none">
+      <svg width="150" height="120" viewBox="0 0 150 120" aria-hidden="true" style="position: absolute; top: -18px; right: -18px"><circle cx="104" cy="44" r="40" fill="#FFC531"></circle><ellipse cx="50" cy="78" rx="12" ry="26" transform="rotate(-40 50 78)" fill="#3DD68C"></ellipse><ellipse cx="82" cy="98" rx="10" ry="22" transform="rotate(20 82 98)" fill="#8EDBAE"></ellipse></svg>
+      <div style="position: relative; display: flex; gap: 8px; align-items: center">
+        <span style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px 0 8px; border-radius: 14px; background: #FFFFFF; color: #0E5C3D; font-size: 13px; font-weight: 800"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#17855A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15"></path><path d="M5 19c3-4 6-7 10-9"></path></svg>Climat</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 14px; background: #0E5C3D; color: #FFFFFF; font-size: 13px; font-weight: 800"><span style="width: 8px; height: 8px; border-radius: 50%; background: #FFC531"></span>En direct</span>
+      </div>
+      <div style="position: relative; display: flex; flex-direction: column; gap: 3px">
+        <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 28px; line-height: 1.05; letter-spacing: -0.02em">Marche pour le climat</span>
+        <span style="font-size: 15px">14:00 – 17:00 · Hôtel de Ville → Perrache</span>
+      </div>
+      <div style="height: 1px; background: rgba(255,255,255,0.3)"></div>
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <div style="display: flex; flex-direction: column; gap: 0">
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 34px; line-height: 1.05">8 412</span>
+          <span style="font-size: 14px">présents vérifiés · 15 300 soutiens</span>
+        </div>
+        <span style="width: 48px; height: 48px; border-radius: 50%; background: #FFFFFF; color: #17855A; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </div>
+    </a>
+
+    <h2 style="margin: 8px 4px 0; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #5D5A72">À venir</h2>
+
+    <a href="Detail-Fiertes.dc.html" style="flex: none; display: flex; gap: 14px; align-items: center; padding: 12px 14px 12px 12px; border-radius: 20px; background: #FFFFFF; color: #1D1A33; text-decoration: none; box-shadow: 0 1px 3px rgba(29,26,51,0.08)">
+      <span style="flex: none; width: 56px; height: 56px; border-radius: 16px; background: #F0E8FF; display: flex; align-items: center; justify-content: center"><svg width="34" height="26" viewBox="0 0 34 26" fill="none" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M3 23a14 14 0 0 1 28 0" stroke="#E8413C"></path><path d="M7 23a10 10 0 0 1 20 0" stroke="#F7932E"></path><path d="M11 23a6 6 0 0 1 12 0" stroke="#FCD535"></path><path d="M14.5 23a2.5 2.5 0 0 1 5 0" stroke="#3BB26A"></path></svg></span>
+      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+        <span style="font-weight: 700; font-size: 17px; line-height: 1.2">Marche pour l'égalité</span>
+        <span style="font-size: 14px; color: #5D5A72">Mar. 20 oct. · 18:00 · Terreaux</span>
+        <span style="display: flex; gap: 8px; align-items: center; font-size: 13px; color: #5D5A72"><span style="padding: 2px 8px; border-radius: 999px; background: #F0E8FF; color: #4A1FA0; font-weight: 700; font-size: 12px">Fiertés</span>6 480 soutiens</span>
+      </div>
+    </a>
+
+    <a href="#" style="flex: none; display: flex; gap: 14px; align-items: center; padding: 12px 14px 12px 12px; border-radius: 20px; background: #FFFFFF; color: #1D1A33; text-decoration: none; box-shadow: 0 1px 3px rgba(29,26,51,0.08)">
+      <span style="flex: none; width: 56px; height: 56px; border-radius: 16px; background: #FFE7E3; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D2362B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4h3l8 4.5V5.5L6 10H3z"></path><path d="M17.5 9a4 4 0 0 1 0 6"></path><path d="M20 6.5a8 8 0 0 1 0 11"></path></svg></span>
+      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+        <span style="font-weight: 700; font-size: 17px; line-height: 1.2">Journée d'action pour les salaires</span>
+        <span style="font-size: 14px; color: #5D5A72">Jeu. 22 oct. · 11:00 · Jean Macé</span>
+        <span style="display: flex; gap: 8px; align-items: center; font-size: 13px; color: #5D5A72"><span style="padding: 2px 8px; border-radius: 999px; background: #FFE7E3; color: #A3241C; font-weight: 700; font-size: 12px">Social</span>3 950 soutiens</span>
+      </div>
+    </a>
+
+    <a href="Detail-Paix.dc.html" style="flex: none; display: flex; gap: 14px; align-items: center; padding: 12px 14px 12px 12px; border-radius: 20px; background: #FFFFFF; color: #1D1A33; text-decoration: none; box-shadow: 0 1px 3px rgba(29,26,51,0.08)">
+      <span style="flex: none; width: 56px; height: 56px; border-radius: 16px; background: #E4EEFF; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1F64D6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18M12 12l-6.4 6.4M12 12l6.4 6.4"></path></svg></span>
+      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+        <span style="font-weight: 700; font-size: 17px; line-height: 1.2">Marche pour la paix</span>
+        <span style="font-size: 14px; color: #5D5A72">Sam. 24 oct. · 15:00 · Hôtel de Ville</span>
+        <span style="display: flex; gap: 8px; align-items: center; font-size: 13px; color: #5D5A72"><span style="padding: 2px 8px; border-radius: 999px; background: #E4EEFF; color: #174DA8; font-weight: 700; font-size: 12px">Paix</span>9 870 soutiens</span>
+      </div>
+    </a>
+  </main>
+
+  <nav aria-label="Navigation principale" style="flex: none; height: 78px; box-sizing: border-box; display: flex; padding: 6px 8px 16px; background: #FFFFFF; border-radius: 24px 24px 0 0; box-shadow: 0 -2px 12px rgba(29,26,51,0.06)">
+    <a href="Main.dc.html" aria-current="page" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #1D1A33; text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"></path></svg>
+      Manifs
+      <span style="display: flex; gap: 2px"><span style="width: 6px; height: 4px; border-radius: 2px; background: #FFC531"></span><span style="width: 6px; height: 4px; border-radius: 2px; background: #FF5FA2"></span><span style="width: 6px; height: 4px; border-radius: 2px; background: #49A8FF"></span></span>
+    </a>
+    <a href="#" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #5D5A72; text-decoration: none; font-size: 12px; font-weight: 600">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"></path></svg>
+      Mes soutiens
+      <span style="height: 4px"></span>
+    </a>
+    <a href="#" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #5D5A72; text-decoration: none; font-size: 12px; font-weight: 600">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"></path></svg>
+      Vie privée
+      <span style="height: 4px"></span>
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

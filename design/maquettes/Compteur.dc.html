@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Foulala · Compteur en direct</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Figtree:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: {{t.soft}}; color: #1D1A33; font-family: 'Figtree', system-ui, sans-serif; overflow: hidden">
+
+  <div style="flex: none; height: 60px; padding: 8px 16px 0 12px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between">
+    <div style="display: flex; align-items: center; gap: 8px">
+      <a href="Detail.dc.html" aria-label="Retour à la manifestation" style="width: 44px; height: 44px; border-radius: 50%; background: #FFFFFF; color: #1D1A33; display: flex; align-items: center; justify-content: center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+      </a>
+      <span style="display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 15px; background: #FFFFFF; font-size: 14px; font-weight: 800"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{t.primary}}"></span>En direct</span>
+    </div>
+    <span style="font-size: 13px; color: #5D5A72">mis à jour il y a 30 s</span>
+  </div>
+
+  <div style="flex: 1; min-height: 0; overflow: hidden; padding: 6px 20px 20px; display: flex; flex-direction: column; gap: 12px">
+
+    <div style="position: relative; overflow: hidden; flex: none; padding: 20px 22px; border-radius: 28px; background: {{t.primary}}; color: #FFFFFF; display: flex; flex-direction: column; gap: 2px">
+      <svg width="170" height="170" viewBox="0 0 170 170" aria-hidden="true" style="position: absolute; top: -40px; right: -40px">
+        <circle cx="100" cy="70" r="46" fill="{{t.pop}}"></circle>
+        <circle cx="40" cy="120" r="22" fill="{{t.mid}}" fill-opacity="0.7"></circle>
+        <circle cx="140" cy="140" r="14" fill="#FFFFFF" fill-opacity="0.35"></circle>
+      </svg>
+      <span style="position: relative; font-size: 15px; font-weight: 700">{{d.title}}</span>
+      <span style="position: relative; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 84px; line-height: 0.98; letter-spacing: -0.04em">{{d.total}}</span>
+      <span style="position: relative; font-size: 18px; font-weight: 800">présents vérifiés, au minimum</span>
+      <p style="position: relative; margin: 6px 0 0; font-size: 14px; line-height: 1.4">Seuls les téléphones qui ont signalé leur présence sont comptés : le cortège réel est plus nombreux.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <div style="padding: 12px 14px; border-radius: 18px; background: #FFFFFF; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 28px; line-height: 1.05; color: {{t.deep}}">{{d.supporters}}</span>
+        <span style="font-size: 13px; color: #5D5A72">soutiens, sans GPS</span>
+      </div>
+      <div style="padding: 12px 14px; border-radius: 18px; background: #FFFFFF; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 28px; line-height: 1.05; color: {{t.deep}}">{{d.peak}}</span>
+        <span style="font-size: 13px; color: #5D5A72">pic : {{d.peakN}} arrivées</span>
+      </div>
+    </div>
+
+    <section style="flex: none; padding: 14px 16px; border-radius: 20px; background: #FFFFFF; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <h2 style="margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.deep}}">Arrivées par quart d'heure</h2>
+        <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #5D5A72"><span style="width: 10px; height: 10px; border-radius: 3px; background: {{t.pop}}"></span>en cours</span>
+      </div>
+      <div role="img" aria-label="{{d.chartLabel}}" style="display: flex; flex-direction: column; gap: 6px">
+        <div style="height: 100px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; align-items: end; border-bottom: 2px solid #E4E2EE">
+          <div style="height: {{b1.h}}px; background: {{b1.bg}}; border-radius: 6px 6px 0 0"></div>
+          <div style="height: {{b2.h}}px; background: {{b2.bg}}; border-radius: 6px 6px 0 0"></div>
+          <div style="height: {{b3.h}}px; background: {{b3.bg}}; border-radius: 6px 6px 0 0"></div>
+          <div style="height: {{b4.h}}px; background: {{b4.bg}}; border-radius: 6px 6px 0 0"></div>
+          <div style="height: {{b5.h}}px; background: {{b5.bg}}; border-radius: 6px 6px 0 0"></div>
+          <div style="height: {{b6.h}}px; background: {{b6.bg}}; border-radius: 6px 6px 0 0"></div>
+          <div style="height: {{b7.h}}px; background: {{b7.bg}}; border-radius: 6px 6px 0 0"></div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; font-size: 12px; font-weight: 600; color: #5D5A72">
+          <span>{{d.l1}}</span><span></span><span>{{d.l3}}</span><span></span><span>{{d.l5}}</span><span></span><span>{{d.l7}}</span>
+        </div>
+      </div>
+    </section>
+
+    <section style="flex: none; padding: 14px 16px; border-radius: 20px; background: #FFFFFF; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h2 style="margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.deep}}">Où les présences sont signalées</h2>
+        <span style="font-size: 13px; color: #5D5A72">{{d.slot}} · 9 tronçons d'environ 200 m</span>
+      </div>
+      <div role="img" aria-label="{{d.densityLabel}}" style="display: flex; flex-direction: column; gap: 5px">
+        <div style="display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 3px; height: 34px">
+          <div style="border-radius: 10px 3px 3px 10px; background: {{c1.bg}}"></div>
+          <div style="border-radius: 3px; background: {{c2.bg}}"></div>
+          <div style="border-radius: 3px; background: {{c3.bg}}"></div>
+          <div style="border-radius: 3px; background: {{c4.bg}}"></div>
+          <div style="border-radius: 3px; background: {{c5.bg}}"></div>
+          <div style="border-radius: 3px; background: {{c6.bg}}"></div>
+          <div style="border-radius: 3px; background: {{c7.bg}}"></div>
+          <div style="border-radius: 3px; background: {{c8.bg}}"></div>
+          <div style="border-radius: 3px 10px 10px 3px; background: {{c9.bg}}"></div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 3px; text-align: center; font-size: 12px; font-weight: 600; color: #3D3A52">
+          <span>{{c1.label}}</span><span>{{c2.label}}</span><span>{{c3.label}}</span><span>{{c4.label}}</span><span>{{c5.label}}</span><span>{{c6.label}}</span><span>{{c7.label}}</span><span>{{c8.label}}</span><span>{{c9.label}}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700">
+          <span>{{d.from}}</span><span>{{d.to}}</span>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12px; color: #5D5A72">
+        <span style="display: inline-flex; align-items: center; gap: 6px">moins<span style="display: inline-flex; gap: 2px"><span style="width: 14px; height: 10px; border-radius: 3px; background: {{s0}}"></span><span style="width: 14px; height: 10px; border-radius: 3px; background: {{s1}}"></span><span style="width: 14px; height: 10px; border-radius: 3px; background: {{s2}}"></span><span style="width: 14px; height: 10px; border-radius: 3px; background: {{s3}}"></span></span>plus</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 14px; height: 10px; border-radius: 3px; background: {{masked}}"></span>masqué sous 20 personnes</span>
+      </div>
+    </section>
+
+    <p style="margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 13px; line-height: 1.4; color: #5D5A72"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 2px"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>Jetons anonymes supprimés 24 h après la fin. Seuls les totaux restent.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"cause":{"editor":"enum","options":["Climat","Fiertés","Paix"],"default":"Climat","section":"Thème"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  themes() {
+    return {
+      'Climat': { primary: '#17855A', deep: '#0E5C3D', soft: '#E3F6EA', mid: '#8EDBAE', pop: '#FFC531',
+        scale: ['#CDEFD9', '#8EDBAE', '#3DB97A', '#17855A'] },
+      'Fiertés': { primary: '#6D35D9', deep: '#4A1FA0', soft: '#F0E8FF', mid: '#BC9BFA', pop: '#FF5FA2',
+        scale: ['#E2D4FF', '#BC9BFA', '#9466EE', '#6D35D9'] },
+      'Paix': { primary: '#1F64D6', deep: '#174DA8', soft: '#E4EEFF', mid: '#9DC0FF', pop: '#FFB020',
+        scale: ['#D3E3FF', '#9DC0FF', '#5B92F0', '#1F64D6'] }
+    };
+  }
+  data() {
+    return {
+      'Climat': { title: 'Marche pour le climat', total: '8 413', supporters: '15 300', peak: '14:15', peakN: '2 260',
+        slot: '15:00 – 15:15', from: 'Hôtel de Ville', to: 'Perrache',
+        slots: ['13:30', '13:45', '14:00', '14:15', '14:30', '14:45', '15:00'],
+        arrivals: [210, 640, 1820, 2260, 1540, 1323, 620],
+        density: [null, 34, 88, 160, 142, 96, 61, 27, null] },
+      'Fiertés': { title: 'Marche pour l’égalité', total: '3 127', supporters: '6 480', peak: '18:15', peakN: '940',
+        slot: '19:00 – 19:15', from: 'Terreaux', to: 'Perrache',
+        slots: ['17:30', '17:45', '18:00', '18:15', '18:30', '18:45', '19:00'],
+        arrivals: [95, 310, 820, 940, 610, 240, 112],
+        density: [null, 22, null, 31, 27, null, null, 21, null] },
+      'Paix': { title: 'Marche pour la paix', total: '5 372', supporters: '9 870', peak: '15:15', peakN: '1 480',
+        slot: '16:00 – 16:15', from: 'Hôtel de Ville', to: 'Perrache',
+        slots: ['14:30', '14:45', '15:00', '15:15', '15:30', '15:45', '16:00'],
+        arrivals: [140, 520, 1210, 1480, 990, 630, 402],
+        density: [null, 24, 51, 96, 88, 70, 41, 25, null] }
+    };
+  }
+  renderVals() {
+    const themes = this.themes();
+    const cause = themes[this.props.cause] ? this.props.cause : 'Climat';
+    const t = themes[cause];
+    const raw = this.data()[cause];
+    const masked = 'repeating-linear-gradient(135deg, #DCDAE6 0px, #DCDAE6 3px, #F7F6FB 3px, #F7F6FB 7px)';
+    const maxA = Math.max.apply(null, raw.arrivals);
+    const bars = raw.arrivals.map((v, i) => ({
+      h: Math.max(4, Math.round(v / maxA * 100)),
+      bg: i === raw.arrivals.length - 1 ? t.pop : t.primary
+    }));
+    const visible = raw.density.filter((v) => v !== null);
+    const maxD = Math.max.apply(null, visible);
+    const cells = raw.density.map((v) => {
+      if (v === null) return { bg: masked, label: '—' };
+      const r = v / maxD;
+      const k = r < 0.3 ? 0 : r < 0.55 ? 1 : r < 0.8 ? 2 : 3;
+      return { bg: t.scale[k], label: String(v) };
+    });
+    const fmt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const d = Object.assign({}, raw, {
+      l1: raw.slots[0], l3: raw.slots[2], l5: raw.slots[4], l7: raw.slots[6],
+      chartLabel: 'Arrivées par quart d’heure : ' + raw.slots.map((s, i) => s + ', ' + fmt(raw.arrivals[i])).join(' ; ') + ' (en cours)',
+      densityLabel: 'Présences signalées par tronçon, de ' + raw.from + ' à ' + raw.to + ' : ' + cells.map((c) => c.label === '—' ? 'masqué' : c.label).join(', ')
+    });
+    return {
+      t: t, d: d,
+      b1: bars[0], b2: bars[1], b3: bars[2], b4: bars[3], b5: bars[4], b6: bars[5], b7: bars[6],
+      c1: cells[0], c2: cells[1], c3: cells[2], c4: cells[3], c5: cells[4], c6: cells[5], c7: cells[6], c8: cells[7], c9: cells[8],
+      s0: t.scale[0], s1: t.scale[1], s2: t.scale[2], s3: t.scale[3],
+      masked: masked
+    };
+  }
+}
+</script>
+</body>
+</html>

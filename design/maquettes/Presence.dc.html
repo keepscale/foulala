@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Foulala · J’y suis</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Figtree:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: {{t.soft}}; color: #1D1A33; font-family: 'Figtree', system-ui, sans-serif; overflow: hidden">
+
+  <div style="flex: none; height: 60px; padding: 8px 12px 0; box-sizing: border-box; display: flex; align-items: center; gap: 6px">
+    <a href="Detail.dc.html" aria-label="Retour à la manifestation" style="width: 44px; height: 44px; border-radius: 50%; background: #FFFFFF; color: #1D1A33; display: flex; align-items: center; justify-content: center">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+    </a>
+    <span style="font-size: 16px; font-weight: 700; padding-left: 4px">{{d.title}}</span>
+  </div>
+
+  <div style="flex: 1; min-height: 0; overflow: hidden; padding: 6px 20px 0; display: flex; flex-direction: column; gap: 16px">
+
+    <sc-if value="{{envoye}}" hint-placeholder-val="{{true}}">
+      <div style="position: relative; display: flex; flex-direction: column; gap: 10px">
+        <svg width="190" height="96" viewBox="0 0 190 96" aria-hidden="true" style="position: absolute; top: -4px; right: -8px">
+          <circle cx="24" cy="20" r="7" fill="{{t.pop}}"></circle>
+          <rect x="60" y="8" width="16" height="7" rx="3.5" transform="rotate(30 68 11)" fill="{{t.primary}}"></rect>
+          <circle cx="104" cy="40" r="5" fill="{{t.mid}}"></circle>
+          <rect x="130" y="14" width="18" height="8" rx="4" transform="rotate(-25 139 18)" fill="{{t.pop}}"></rect>
+          <circle cx="170" cy="56" r="9" fill="{{t.primary}}" fill-opacity="0.85"></circle>
+          <rect x="44" y="60" width="14" height="6" rx="3" transform="rotate(-50 51 63)" fill="{{t.mid}}"></rect>
+          <circle cx="142" cy="84" r="5" fill="{{t.pop}}"></circle>
+          <rect x="92" y="74" width="16" height="7" rx="3.5" transform="rotate(15 100 77)" fill="{{t.primary}}" fill-opacity="0.6"></rect>
+        </svg>
+        <span style="width: 72px; height: 72px; border-radius: 50%; background: {{t.primary}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+        <h1 style="margin: 4px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 36px; line-height: 1.02; letter-spacing: -0.03em">Présence comptée&nbsp;!</h1>
+        <p style="margin: 0; font-size: 16px; line-height: 1.45; color: #3D3A52">Merci&nbsp;! Vous faites partie des <strong style="color: #1D1A33">{{d.presentPlus}}</strong> présents vérifiés. Appuyer à nouveau ne vous compte pas deux fois.</p>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{attente}}" hint-placeholder-val="{{false}}">
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <span style="width: 72px; height: 72px; border-radius: 50%; background: {{t.deep}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 2l20 20M8.5 16.4a5 5 0 0 1 7 0M5 12.9a10 10 0 0 1 5.2-2.8M19 12.9a10 10 0 0 0-2.3-1.6M1.5 9a15 15 0 0 1 4.3-2.6M22.5 9A15 15 0 0 0 11 5.1M12 20h.01"></path></svg></span>
+        <h1 style="margin: 4px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 36px; line-height: 1.02; letter-spacing: -0.03em">En attente de réseau</h1>
+        <p style="margin: 0; font-size: 16px; line-height: 1.45; color: #3D3A52">Vous êtes bien dans le cortège. Votre jeton est gardé sur ce téléphone et partira tout seul dès que le réseau revient, jusqu'à 24 h après la manif.</p>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{horsZone}}" hint-placeholder-val="{{false}}">
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <span style="width: 72px; height: 72px; border-radius: 50%; background: #FFFFFF; color: {{t.deep}}; display: flex; align-items: center; justify-content: center"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg></span>
+        <h1 style="margin: 4px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 36px; line-height: 1.02; letter-spacing: -0.03em">Pas encore dans le cortège</h1>
+        <p style="margin: 0; font-size: 16px; line-height: 1.45; color: #3D3A52">Vous êtes à environ 140 m de la zone. Rapprochez-vous du parcours, puis réessayez. Rien n'a été envoyé.</p>
+      </div>
+    </sc-if>
+
+    <div style="flex: none; border-radius: 20px; overflow: hidden; background: #FFFFFF">
+      <svg viewBox="120 102 180 72" width="100%" height="132" preserveAspectRatio="xMidYMid slice" role="img" aria-label="{{mapLabel}}" style="display: block">
+        <rect x="0" y="0" width="390" height="360" fill="#EEF0E8"></rect>
+        <g stroke="#FFFFFF" stroke-width="4" fill="none" stroke-linecap="round">
+          <path d="M0 96 L390 92"></path>
+          <path d="M0 150 L390 154"></path>
+          <path d="M150 0 L166 360"></path>
+          <path d="M245 0 L228 360"></path>
+          <path d="M185 0 L196 360" stroke-width="2.5"></path>
+          <path d="M280 0 L250 360" stroke-width="2.5"></path>
+        </g>
+        <rect x="150" y="150" width="60" height="40" rx="3" fill="#EADFC8"></rect>
+        <path d="M340 -20 C330 100 300 200 250 380" stroke="#BFDDF2" stroke-width="56" fill="none"></path>
+        <path d="M278 154 L342 154" stroke="#FFFFFF" stroke-width="5"></path>
+        <polyline points="215,42 207,96 210,128 196,172 190,232 179,300" fill="none" stroke="{{t.primary}}" stroke-opacity="0.2" stroke-width="34" stroke-linejoin="round" stroke-linecap="round"></polyline>
+        <polyline points="215,42 207,96 210,128 196,172 190,232 179,300" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"></polyline>
+        <polyline points="215,42 207,96 210,128 196,172 190,232 179,300" fill="none" stroke="{{t.primary}}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+        <circle cx="{{dotX}}" cy="{{dotY}}" r="10" fill="{{t.pop}}" fill-opacity="0.35"></circle>
+        <circle cx="{{dotX}}" cy="{{dotY}}" r="4.4" fill="#1D1A33" stroke="#FFFFFF" stroke-width="2"></circle>
+      </svg>
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; font-size: 14px">
+        <sc-if value="{{dansZone}}" hint-placeholder-val="{{true}}">
+          <span><strong style="font-weight: 800">Tronçon 4 sur 9</strong> · Rue de la République</span>
+        </sc-if>
+        <sc-if value="{{horsZone}}" hint-placeholder-val="{{false}}">
+          <span><strong style="font-weight: 800">≈ 140 m</strong> de la zone · GPS à 12 m près</span>
+        </sc-if>
+        <span style="display: inline-flex; align-items: center; gap: 6px; color: #5D5A72; font-size: 13px; font-weight: 600"><span style="width: 10px; height: 10px; border-radius: 50%; background: #1D1A33"></span>Vous</span>
+      </div>
+    </div>
+
+    <sc-if value="{{dansZone}}" hint-placeholder-val="{{true}}">
+      <section style="flex: none; background: #FFFFFF; border-radius: 20px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; align-items: center; justify-content: space-between">
+          <h2 style="margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.deep}}">Ce qui part du téléphone</h2>
+          <sc-if value="{{envoye}}" hint-placeholder-val="{{true}}">
+            <span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; background: {{t.soft}}; color: {{t.deep}}; font-size: 12px; font-weight: 800"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Envoyé</span>
+          </sc-if>
+          <sc-if value="{{attente}}" hint-placeholder-val="{{false}}">
+            <span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; background: #EDECF3; color: #1D1A33; font-size: 12px; font-weight: 800"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>En file d'attente</span>
+          </sc-if>
+        </div>
+        <dl style="margin: 0; display: grid; grid-template-columns: 84px minmax(0, 1fr); row-gap: 7px; font-size: 14px">
+          <dt style="color: #5D5A72">Manif</dt><dd style="margin: 0; font-weight: 700">{{d.title}}</dd>
+          <dt style="color: #5D5A72">Jeton</dt><dd style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-weight: 500">7f3c91a2-…-e04b</dd>
+          <dt style="color: #5D5A72">Créneau</dt><dd style="margin: 0; font-weight: 700">{{d.slot}}</dd>
+          <dt style="color: #5D5A72">Tronçon</dt><dd style="margin: 0; font-weight: 700">4</dd>
+        </dl>
+        <div style="height: 0; border-top: 2px dashed #E4E2EE"></div>
+        <p style="margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 1.4; color: #3D3A52"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 2px"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg><span><strong style="color: #1D1A33">Reste ici :</strong> votre position GPS, votre identité, l'heure exacte.</span></p>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{horsZone}}" hint-placeholder-val="{{false}}">
+      <ul style="margin: 0; padding: 14px 16px; list-style: none; border-radius: 20px; background: #FFFFFF; display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.4; color: #3D3A52">
+        <li style="display: flex; gap: 10px"><span style="flex: none; width: 8px; height: 8px; margin-top: 7px; border-radius: 50%; background: {{t.primary}}"></span>La zone couvre 100 m de part et d'autre du parcours.</li>
+        <li style="display: flex; gap: 10px"><span style="flex: none; width: 8px; height: 8px; margin-top: 7px; border-radius: 50%; background: {{t.primary}}"></span>Entre les immeubles, le GPS peut se tromper : attendez quelques secondes à découvert.</li>
+      </ul>
+    </sc-if>
+  </div>
+
+  <div style="flex: none; padding: 12px 20px 24px">
+    <sc-if value="{{dansZone}}" hint-placeholder-val="{{true}}">
+      <a href="Compteur.dc.html" style="width: 100%; height: 58px; box-sizing: border-box; border-radius: 18px; background: {{t.primary}}; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 19px">Voir le compteur en direct<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+    </sc-if>
+    <sc-if value="{{horsZone}}" hint-placeholder-val="{{false}}">
+      <button type="button" style="width: 100%; height: 58px; box-sizing: border-box; border-radius: 18px; border: none; background: {{t.primary}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 19px; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"></path></svg>Réessayer</button>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"cause":{"editor":"enum","options":["Climat","Fiertés","Paix"],"default":"Climat","section":"Thème"},"etat":{"editor":"enum","options":["Envoyée","En attente de réseau","Hors de la zone"],"default":"Envoyée","section":"État du signalement"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  themes() {
+    return {
+      'Climat': { primary: '#17855A', deep: '#0E5C3D', soft: '#E3F6EA', mid: '#8EDBAE', pop: '#FFC531' },
+      'Fiertés': { primary: '#6D35D9', deep: '#4A1FA0', soft: '#F0E8FF', mid: '#BC9BFA', pop: '#FF5FA2' },
+      'Paix': { primary: '#1F64D6', deep: '#174DA8', soft: '#E4EEFF', mid: '#9DC0FF', pop: '#FFB020' }
+    };
+  }
+  data() {
+    return {
+      'Climat': { title: 'Marche pour le climat', presentPlus: '8 413', slot: '15:00 – 15:15' },
+      'Fiertés': { title: 'Marche pour l’égalité', presentPlus: '3 127', slot: '19:00 – 19:15' },
+      'Paix': { title: 'Marche pour la paix', presentPlus: '5 372', slot: '16:00 – 16:15' }
+    };
+  }
+  renderVals() {
+    const themes = this.themes();
+    const cause = themes[this.props.cause] ? this.props.cause : 'Climat';
+    const etat = this.props.etat ?? 'Envoyée';
+    const horsZone = etat === 'Hors de la zone';
+    const attente = etat === 'En attente de réseau';
+    return {
+      t: themes[cause],
+      d: this.data()[cause],
+      envoye: !horsZone && !attente,
+      attente: attente,
+      horsZone: horsZone,
+      dansZone: !horsZone,
+      dotX: horsZone ? 249 : 204,
+      dotY: horsZone ? 128 : 142,
+      mapLabel: horsZone
+        ? 'Votre position, à environ 140 mètres à l’est de la zone du cortège'
+        : 'Votre position, dans la zone du cortège, sur le tronçon 4'
+    };
+  }
+}
+</script>
+</body>
+</html>

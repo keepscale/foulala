@@ -1,0 +1,134 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-08T15:05:00Z"
+  },
+  "title": "Foulala · maquettes",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "1 · Liste des manifs",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Detail.dc.html": {
+      "x": 470,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "2 · Détail et parcours",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Presence.dc.html": {
+      "x": 940,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "3 · « J’y suis ! »",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Compteur.dc.html": {
+      "x": 1410,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "4 · Compteur en direct",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Detail-Fiertes.dc.html": {
+      "x": 0,
+      "y": 1244,
+      "w": 390,
+      "h": 844,
+      "title": "5 · Détail, thème Fiertés",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Detail-Paix.dc.html": {
+      "x": 470,
+      "y": 1244,
+      "w": 390,
+      "h": 844,
+      "title": "6 · Détail, thème Paix",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Themes.dc.html": {
+      "x": 940,
+      "y": 1244,
+      "w": 1120,
+      "h": 900,
+      "title": "7 · Palette des causes",
+      "radius": 24
+    },
+    "Organiser.dc.html": {
+      "x": 0,
+      "y": 2544,
+      "w": 1280,
+      "h": 1500,
+      "title": "8 · Création d'une manif (organisateur)",
+      "expand": "fill"
+    },
+    "Logo.dc.html": {
+      "x": 0,
+      "y": -1244,
+      "w": 1120,
+      "h": 844,
+      "title": "0 · Logo et identité",
+      "radius": 24
+    }
+  },
+  "order": [
+    "Logo.dc.html",
+    "Main.dc.html",
+    "Detail.dc.html",
+    "Presence.dc.html",
+    "Compteur.dc.html",
+    "Detail-Fiertes.dc.html",
+    "Detail-Paix.dc.html",
+    "Themes.dc.html",
+    "Organiser.dc.html"
+  ],
+  "notes": {
+    "titreParticipant": {
+      "x": 0,
+      "y": -300,
+      "text": "Participant · app mobile",
+      "kind": "title1",
+      "maxW": 1800
+    },
+    "titreThemes": {
+      "x": 0,
+      "y": 944,
+      "text": "Un thème par cause",
+      "kind": "title1",
+      "maxW": 2060
+    },
+    "titreOrganisateur": {
+      "x": 0,
+      "y": 2244,
+      "text": "Organisateur · app web",
+      "kind": "title1",
+      "maxW": 1280
+    },
+    "titreIdentite": {
+      "x": 0,
+      "y": -1544,
+      "text": "Foulala · identité",
+      "kind": "title1",
+      "maxW": 1120
+    }
+  },
+  "designSystems": []
+}

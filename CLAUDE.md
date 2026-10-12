@@ -100,13 +100,14 @@ La CI (`.github/workflows/db.yml`) lance les tests SQL à chaque push qui touche
 
 ## Design
 
-Maquettes : canevas « Maquettes app manifestations » sur claude.ai (artifact privé du propriétaire du dépôt). **Il porte encore l'ancien nom de travail « Cortège ».**
+Maquettes : canevas « Foulala · maquettes » sur claude.ai (privé), sources copiées dans `design/maquettes/` (format du canevas, référence pour l'implémentation). Logo : `design/logo.svg`.
 
 - Ton : coloré, chaleureux, coins arrondis, boutons en pilule, jamais austère.
 - Polices : **Bricolage Grotesque** (titres, 800), **Figtree** (texte), IBM Plex Mono (jeton uniquement).
 - Texte `#1D1A33`, texte secondaire `#5D5A72`, fond `#F7F6FB`.
 - **Un thème par cause**, choisi par l'organisateur : Climat, Fiertés, Paix, Social, Santé, Éducation, Autre (neutre). Couleurs dans `design/tokens.json`. Pour ajouter une cause, voir le skill `theme-cause`.
 - Le ton de la manif (titre, cause) prime sur le ton léger du nom. Les actions restent sobres : « J'y suis ! », « Je soutiens ».
+- Logo : trois bulles (jaune `#FFC531`, rose `#FF5FA2`, bleu `#49A8FF`), celle du milieu en repère de carte. Logotype « foulala » en minuscules, « lala » en rose.
 - Accessibilité : contraste 4,5:1 minimum, cibles tactiles de 44 px minimum, jamais la couleur seule pour porter un sens.
 
 ## Nom et marque

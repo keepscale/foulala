@@ -1,6 +1,7 @@
 # Design
 
-- **Maquettes** : canevas « Maquettes app manifestations » sur claude.ai (privé). Il porte encore l'ancien nom de travail « Cortège » : à renommer en Foulala.
+- **Maquettes** : canevas « Foulala · maquettes » sur claude.ai (privé). Les sources sont copiées dans [`maquettes/`](maquettes).
+- **Logo** : [`logo.svg`](logo.svg).
 - **`tokens.json`** : source de vérité des couleurs, polices, rayons et thèmes par cause. L'app et la page web doivent générer leurs thèmes depuis ce fichier.
 
 ## Principes
@@ -12,4 +13,4 @@
 
 ## Logo
 
-À faire. Piste : trois bulles de couleur (la foule), dont celle du milieu prend la forme d'un repère de carte. Couleurs de marque : `#FFC531`, `#FF5FA2`, `#49A8FF`.
+Trois bulles de couleur pour la foule, celle du milieu prend la forme d'un repère de carte : on y est. Logotype « foulala » en Bricolage Grotesque 800, minuscules, avec « lala » en rose (`#E0357C` sur fond clair, `#FF7AB6` sur fond sombre). Couleurs de marque : `#FFC531`, `#FF5FA2`, `#49A8FF`.
