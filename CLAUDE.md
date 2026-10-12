@@ -46,7 +46,7 @@ GET /event_count, /event_timeline,        PostgreSQL 16 + PostGIS + pg_cron
 | Table | Contenu |
 |---|---|
 | `organizer` | Seuls comptes de l'app (nom du collectif, e-mail, hash argon2id) |
-| `event` | Manif : titre, revendications (`text[]`), ville, `route` (LineString 4326), `buffer_m` (20 à 500, défaut 100), `zone` et `segment_count` calculés par trigger, horaires, `declared`, `status` (draft, published, cancelled), `purged_at` |
+| `event` | Manif : titre, `cause` (type `event_cause`, mêmes identifiants que `design/tokens.json`, défaut `autre`), revendications (`text[]`), ville, `route` (LineString 4326), `buffer_m` (20 à 500, défaut 100), `zone` et `segment_count` calculés par trigger, horaires, `declared`, `status` (draft, published, cancelled), `purged_at` |
 | `presence` | `(event_id, token)` en clé primaire, `time_slot` (multiple de 15 min), `segment`. Volontairement **sans** `created_at` |
 | `support` | `(event_id, token)`, sans GPS ni heure |
 | `event_tally` | Totaux conservés après purge |
@@ -68,9 +68,9 @@ Les trois états de l'écran : présence envoyée, en attente de réseau, hors d
 ## Organisation du dépôt (monorepo)
 
 ```
-db/        schema.sql, api.sql, tests/*.sql   → la source de vérité
-server/    docker-compose (PostGIS+pg_cron, PostgREST, Caddy), Caddyfile, initdb/
-app/       app Flutter participants (à initialiser)
+db/        schema.sql, api.sql, tests/*.sql   → la source de vérité ; seed.sql (données de dev)
+server/    docker-compose (PostGIS+pg_cron, PostgREST, Caddy), docker-compose.dev.yml, Caddyfile, initdb/
+app/       app Flutter participants
 web/       page web organisateur (à initialiser)
 design/    tokens.json (couleurs par cause, typo), lien vers les maquettes
 docs/      méthode de comptage, vie privée, décisions
@@ -87,7 +87,17 @@ PGHOST=localhost PGUSER=postgres PGPASSWORD=postgres ./scripts/db-test.sh
 
 # Serveur complet
 cd server && cp .env.example .env && docker compose up -d
+
+# Serveur de dev : base + API sur 127.0.0.1:3000 (10.0.2.2:3000 depuis l'émulateur), avec db/seed.sql
+cd server && docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db api
+
+# Tests SQL dans le conteneur de dev (sans psql local)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T -e PGUSER=foulala db bash /repo/scripts/db-test.sh
 ```
+
+`db/seed.sql` crée des manifs fictives à Lyon et Paris, dont deux en cours. Ses dates partent de `now()` : le rejouer remet des manifs en cours (commande dans son en-tête). Il n'est **jamais** chargé en production.
+
+Sous Windows, `.gitattributes` force les fins de ligne LF pour `*.sh`, `*.sql` et le Caddyfile : en CRLF, l'initialisation de la base échoue.
 
 La CI (`.github/workflows/db.yml`) lance les tests SQL à chaque push qui touche `db/` ou `server/`.
 

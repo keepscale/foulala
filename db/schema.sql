@@ -28,10 +28,15 @@ CREATE TABLE organizer (
 -- ---------------------------------------------------------------------
 CREATE TYPE event_status AS ENUM ('draft', 'published', 'cancelled');
 
+-- Mêmes identifiants que les clés `causes` de design/tokens.json (voir le skill theme-cause).
+-- La cause habille la manif, elle ne change jamais le comptage.
+CREATE TYPE event_cause AS ENUM ('climat', 'fiertes', 'paix', 'social', 'sante', 'education', 'autre');
+
 CREATE TABLE event (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     organizer_id  uuid NOT NULL REFERENCES organizer(id) ON DELETE CASCADE,
     title         text NOT NULL,
+    cause         event_cause NOT NULL DEFAULT 'autre', -- thème visuel, choisi par l'organisateur
     description   text,
     demands       text[] NOT NULL DEFAULT '{}',        -- revendications, dans l'ordre
     city          text NOT NULL,                        -- pour lister les manifs sans demander la position de l'utilisateur

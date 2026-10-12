@@ -33,6 +33,7 @@ GRANT USAGE ON SCHEMA api TO web_anon;
 CREATE VIEW api.events AS
 SELECT e.id,
        e.title,
+       e.cause,
        e.description,
        e.demands,
        e.city,

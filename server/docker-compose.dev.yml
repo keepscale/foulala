@@ -1,0 +1,25 @@
+# Foulala : surcharge pour le développement local (JAMAIS en production)
+#
+#   cd server && cp .env.example .env
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db api
+#
+# - API PostgREST sur http://127.0.0.1:3000 (depuis l'émulateur Android : http://10.0.2.2:3000)
+# - PostgreSQL sur 127.0.0.1:5433 (5432 est souvent pris par une installation locale)
+# - db/seed.sql chargé à la création de la base ; pour le rejouer, voir son en-tête.
+# - Pas de Caddy : on ne lance que `db` et `api`.
+# Les ports ne sont ouverts que sur 127.0.0.1, jamais sur le réseau local.
+
+services:
+  db:
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - ../db/seed.sql:/docker-entrypoint-initdb.d/50-seed.sql:ro
+      - ../db/seed.sql:/seed.sql:ro
+      - ..:/repo:ro
+
+  api:
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      PGRST_OPENAPI_SERVER_PROXY_URI: http://127.0.0.1:3000
