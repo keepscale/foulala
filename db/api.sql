@@ -50,6 +50,11 @@ FROM public.event e
 JOIN public.organizer o ON o.id = e.organizer_id
 WHERE e.status IN ('published', 'cancelled');
 
+-- Les fonctions appelées dans une vue sont vérifiées avec les droits de l'APPELANT.
+-- Le REVOKE plus haut a aussi fermé les fonctions PostGIS (installées dans `public`) :
+-- on rouvre la seule dont api.events a besoin. Elle ne fait que mettre une géométrie en GeoJSON.
+GRANT EXECUTE ON FUNCTION public.st_asgeojson(geometry, integer, integer) TO web_anon;
+
 CREATE VIEW api.event_count    AS SELECT * FROM public.event_count;
 CREATE VIEW api.event_timeline AS SELECT * FROM public.event_timeline;
 CREATE VIEW api.event_density  AS SELECT * FROM public.event_density;   -- seuil de 20 déjà appliqué

@@ -23,6 +23,10 @@ BEGIN
     ASSERT (SELECT present FROM api.event_count WHERE event_id = e) = 1, 'api.event_count';
     ASSERT (SELECT organizer FROM api.events WHERE id = e) = 'Collectif API', 'api.events';
 
+    -- Parcours et zone en GeoJSON : le téléphone en a besoin pour vérifier la présence localement
+    ASSERT (SELECT route->>'type' FROM api.events WHERE id = e) = 'LineString', 'api.events.route';
+    ASSERT (SELECT zone->>'type' FROM api.events WHERE id = e) = 'Polygon', 'api.events.zone';
+
     -- Aucune colonne e-mail exposée
     ASSERT NOT EXISTS (SELECT 1 FROM information_schema.columns
                        WHERE table_schema = 'api' AND column_name ILIKE '%mail%'),
