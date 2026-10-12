@@ -18,7 +18,8 @@ DELETE FROM organizer WHERE id::text LIKE '5eed0000-%';   -- cascade sur event, 
 
 INSERT INTO organizer (id, name, email, password_hash) VALUES
     ('5eed0000-0000-0000-0000-000000000001', 'Collectif test Lyon',  'lyon@example.org',  'seed'),
-    ('5eed0000-0000-0000-0000-000000000002', 'Collectif test Paris', 'paris@example.org', 'seed');
+    ('5eed0000-0000-0000-0000-000000000002', 'Collectif test Paris', 'paris@example.org', 'seed'),
+    ('5eed0000-0000-0000-0000-000000000003', 'Collectif test Nancy', 'nancy@example.org', 'seed');
 
 -- Jour J à 14 h, heure de Paris
 CREATE FUNCTION pg_temp.seed_day(days integer, at time DEFAULT '14:00')
@@ -96,6 +97,25 @@ INSERT INTO event (id, organizer_id, title, cause, description, demands, city, r
     ST_SetSRID(ST_GeomFromGeoJSON('{"type":"LineString","coordinates":[[2.3372,48.8399],[2.3404,48.8432],[2.3430,48.8462],[2.3440,48.8487]]}'), 4326),
     100, pg_temp.seed_day(5), pg_temp.seed_day(5, '17:00'), true, 'published'),
 
+-- Nancy, en cours pendant 24 h (pour tester « J'y suis ! » sur un vrai téléphone) :
+-- rue Sainte-Catherine → place Stanislas → rue Stanislas → boulevard Albert-Ier.
+-- Tracé des rues d'après OpenStreetMap ; entre la gare et le boulevard Albert-Ier,
+-- le passage au-dessus des voies est approximé par une ligne droite.
+(   '5eed0000-0000-0000-0000-0000000000e9', '5eed0000-0000-0000-0000-000000000003',
+    'Marche de test à Nancy', 'social',
+    'Manif fictive pour tester l''app sur le terrain.',
+    ARRAY['Tester le « J''y suis ! » en conditions réelles'],
+    'Nancy',
+    ST_SetSRID(ST_GeomFromGeoJSON('{"type":"LineString","coordinates":[
+        [6.18987,48.69546],[6.18929,48.69538],[6.18791,48.69495],[6.18752,48.69483],[6.18564,48.69426],
+        [6.18495,48.69405],[6.18401,48.69376],
+        [6.18255,48.69331],[6.18124,48.69291],[6.18095,48.69282],[6.17983,48.69249],[6.17906,48.69225],
+        [6.17781,48.69187],[6.17621,48.69139],[6.17572,48.69124],[6.17530,48.69110],
+        [6.16781,48.69289],
+        [6.16795,48.69319],[6.16774,48.69416],[6.16754,48.69507],[6.16734,48.69599],[6.16715,48.69694],
+        [6.16691,48.69803],[6.16680,48.69848],[6.16627,48.69911]]}'), 4326),
+    100, pg_temp.seed_now(), pg_temp.seed_now() + interval '24 hours', true, 'published'),
+
 -- Lyon, brouillon : ne doit jamais apparaître dans l'API
 (   '5eed0000-0000-0000-0000-0000000000e8', '5eed0000-0000-0000-0000-000000000001',
     'Brouillon pas encore publié', 'autre',
@@ -115,7 +135,8 @@ SELECT e.id,
 FROM event e
 JOIN (VALUES ('5eed0000-0000-0000-0000-0000000000e1'::uuid, 2500),
              ('5eed0000-0000-0000-0000-0000000000e5'::uuid,  900),
-             ('5eed0000-0000-0000-0000-0000000000e6'::uuid, 1200)) AS v(id, n) ON v.id = e.id
+             ('5eed0000-0000-0000-0000-0000000000e6'::uuid, 1200),
+             ('5eed0000-0000-0000-0000-0000000000e9'::uuid,  300)) AS v(id, n) ON v.id = e.id
 CROSS JOIN LATERAL (
     SELECT floor(extract(epoch FROM least(date_bin('15 minutes', now(), 'epoch'), e.ends_at)
                                     - (e.starts_at - interval '30 minutes')) / 900)::int + 1 AS slots
@@ -129,7 +150,8 @@ FROM (VALUES ('5eed0000-0000-0000-0000-0000000000e1'::uuid, 800),
              ('5eed0000-0000-0000-0000-0000000000e3'::uuid, 1200),
              ('5eed0000-0000-0000-0000-0000000000e5'::uuid, 150),
              ('5eed0000-0000-0000-0000-0000000000e6'::uuid, 600),
-             ('5eed0000-0000-0000-0000-0000000000e7'::uuid, 90)) AS v(id, n)
+             ('5eed0000-0000-0000-0000-0000000000e7'::uuid, 90),
+             ('5eed0000-0000-0000-0000-0000000000e9'::uuid, 120)) AS v(id, n)
 CROSS JOIN LATERAL generate_series(1, v.n);
 
 DO $$ BEGIN PERFORM purge_event('5eed0000-0000-0000-0000-0000000000e5'); END $$;

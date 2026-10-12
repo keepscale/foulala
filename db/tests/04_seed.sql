@@ -12,7 +12,7 @@ DECLARE
     e5 constant uuid := '5eed0000-0000-0000-0000-0000000000e5';
 BEGIN
     -- Rechargé deux fois : pas de doublons
-    ASSERT (SELECT count(*) FROM event WHERE id::text LIKE '5eed0000-%') = 8, '8 manifs attendues';
+    ASSERT (SELECT count(*) FROM event WHERE id::text LIKE '5eed0000-%') = 9, '9 manifs attendues';
     ASSERT (SELECT count(*) FROM presence WHERE event_id = e1) = 2500, '2500 présences attendues sur e1';
 
     -- Manif terminée : purgée, il ne reste que les totaux
@@ -33,6 +33,8 @@ BEGIN
            '5 manifs visibles à Lyon';
     ASSERT (SELECT count(*) FROM api.events WHERE city = 'Paris' AND id::text LIKE '5eed0000-%') = 2,
            '2 manifs visibles à Paris';
+    ASSERT (SELECT count(*) FROM api.events WHERE city = 'Nancy' AND id::text LIKE '5eed0000-%') = 1,
+           '1 manif visible à Nancy';
     ASSERT (SELECT count(DISTINCT cause) FROM api.events WHERE id::text LIKE '5eed0000-%') = 7,
            'toutes les causes doivent être représentées';
 
