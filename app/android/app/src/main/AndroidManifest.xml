@@ -7,7 +7,7 @@
 
     <!-- Pas de sauvegarde Google Drive : les jetons ne quittent pas le téléphone. -->
     <application
-        android:label="foulala"
+        android:label="Foulala"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"

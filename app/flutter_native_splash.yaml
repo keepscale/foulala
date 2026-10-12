@@ -1,0 +1,12 @@
+# Écran de démarrage : les trois bulles sur le fond de l'app, logotype en bas.
+# PNG rendus par design/app-icon/render.sh ; régénérer : dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#F7F6FB"
+  image: assets/launcher/splash.png
+  branding: assets/launcher/branding.png
+  branding_bottom_padding: 32
+  android_12:
+    color: "#F7F6FB"
+    image: assets/launcher/splash.png
+    branding: assets/launcher/branding.png
+  web: false
