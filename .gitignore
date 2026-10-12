@@ -18,6 +18,11 @@ app/ios/Pods/
 app/android/.gradle/
 app/android/local.properties
 
+# Supabase (tests) : scripts générés, config locale de l'app avec la clé
+supabase/build/
+app/config/*.json
+!app/config/*.example.json
+
 # Web
 web/node_modules/
 web/dist/

@@ -53,7 +53,28 @@ void main() {
     expect(body['segment'], 3);
     expect(body['token'], report.token.value);
     // Aucun en-tête qui identifierait l'appareil ou l'utilisateur.
-    expect(req.headers.keys.map((k) => k.toLowerCase()).toSet(), {'content-type', 'accept'});
+    expect(
+      req.headers.keys.map((k) => k.toLowerCase()).toSet(),
+      {'content-type', 'accept', 'accept-profile', 'content-profile'},
+    );
+  });
+
+  test('Supabase : seule la clé publique s\'ajoute, identique pour tous', () async {
+    final seen = <Map<String, String>>[];
+    final api = FoulalaApi(
+      Uri.parse('https://projet.supabase.co/rest/v1'),
+      apiKey: 'sb_publishable_test',
+      client: MockClient((req) async {
+        seen.add(req.headers);
+        return http.Response('true', 200);
+      }),
+    );
+    final repo = PresenceRepositoryRemote(api, MemoryStore());
+    await repo.submit(report, retryUntil: retryUntil);
+
+    final headers = seen.single.map((k, v) => MapEntry(k.toLowerCase(), v));
+    expect(headers.keys.toSet(), {'content-type', 'accept', 'accept-profile', 'content-profile', 'apikey'});
+    expect(headers['apikey'], 'sb_publishable_test');
   });
 
   test('PresenceMapper.toApi : mêmes quatre clés, même sans tronçon', () {

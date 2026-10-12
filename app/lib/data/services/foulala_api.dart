@@ -9,10 +9,25 @@ import 'package:http/http.dart' as http;
 /// Vie privée : aucune requête ne porte d'identifiant d'appareil, de position ni d'en-tête
 /// permettant de reconnaître l'utilisateur. Seul `POST /rpc/presence` envoie un jeton.
 class FoulalaApi {
-  FoulalaApi(this._baseUrl, {http.Client? client}) : _client = client ?? http.Client();
+  FoulalaApi(Uri baseUrl, {http.Client? client, String apiKey = ''})
+      // « …/rest/v1/ » et « …/rest/v1 » : même adresse, sans double barre oblique.
+      : _baseUrl = baseUrl.replace(path: baseUrl.path.replaceFirst(RegExp(r'/+$'), '')),
+        _client = client ?? http.Client(),
+        _commonHeaders = {
+          // Le schéma `api`, même si le serveur en expose d'autres (Supabase).
+          'Accept-Profile': 'api',
+          'Content-Profile': 'api',
+          // Supabase : clé publique, la même pour tous les téléphones.
+          if (apiKey.isNotEmpty) 'apikey': apiKey,
+          // Ancienne clé « anon » (un JWT) : la passerelle l'attend aussi ici.
+          if (apiKey.startsWith('eyJ')) 'Authorization': 'Bearer $apiKey',
+        };
 
   final Uri _baseUrl;
   final http.Client _client;
+
+  /// En-têtes envoyés avec chaque requête : aucun ne dépend de l'appareil ni de l'utilisateur.
+  final Map<String, String> _commonHeaders;
 
   static const _timeout = Duration(seconds: 15);
 
@@ -46,11 +61,12 @@ class FoulalaApi {
   /// `POST /rpc/presence`. Renvoie true si le jeton est nouveau, false s'il était déjà compté.
   Future<bool> postPresence(Map<String, Object?> body) async =>
       jsonDecode(await _send(() => _client.post(_uri('rpc/presence'),
-          headers: const {'Content-Type': 'application/json', 'Accept': 'application/json'},
+          headers: {..._commonHeaders, 'Content-Type': 'application/json', 'Accept': 'application/json'},
           body: jsonEncode(body)))) as bool;
 
   Future<List<Map<String, dynamic>>> _getRows(String path, Map<String, String> query) async =>
-      (jsonDecode(await _send(() => _client.get(_uri(path, query), headers: const {'Accept': 'application/json'})))
+      (jsonDecode(await _send(
+                  () => _client.get(_uri(path, query), headers: {..._commonHeaders, 'Accept': 'application/json'})))
               as List)
           .cast<Map<String, dynamic>>();
 

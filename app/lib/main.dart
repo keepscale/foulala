@@ -19,7 +19,7 @@ import 'ui/home/home_shell.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  final api = FoulalaApi(Uri.parse(apiUrl));
+  final api = FoulalaApi(Uri.parse(apiUrl), apiKey: apiKey);
   final store = LocalStore(SharedPreferencesAsync());
 
   runApp(
