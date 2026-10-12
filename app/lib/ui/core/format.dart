@@ -25,6 +25,15 @@ String formatTime(DateTime t) {
   return '${l.hour.toString().padLeft(2, '0')}:${l.minute.toString().padLeft(2, '0')}';
 }
 
+/// « 15:00 – 15:15 ».
+String formatRange(DateTime start, DateTime end) => '${formatTime(start)} – ${formatTime(end)}';
+
+/// 1834 → « 1,8 km » ; moins d'un kilomètre : « 650 m ».
+String formatDistance(double meters) {
+  if (meters < 1000) return '${(meters / 10).round() * 10} m';
+  return '${(meters / 1000).toStringAsFixed(1).replaceAll('.', ',')} km';
+}
+
 /// « Aujourd'hui », « Demain », « Hier » ou « Mar. 20 oct. ».
 String formatDay(DateTime t, {required DateTime now}) {
   final l = t.toLocal();

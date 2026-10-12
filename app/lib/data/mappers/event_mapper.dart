@@ -1,4 +1,5 @@
 import '../../domain/models/event.dart';
+import '../../domain/models/geo.dart';
 
 /// Traduction des lignes JSON de PostgREST (vues `api.events` et `api.event_count`)
 /// vers les modèles du domaine. Seul endroit qui connaît les noms de colonnes de l'API.
@@ -17,10 +18,27 @@ abstract final class EventMapper {
         declared: json['declared'] as bool? ?? false,
         segmentCount: json['segment_count'] as int? ?? 1,
         bufferM: json['buffer_m'] as int? ?? 100,
-        route: json['route'] as Map<String, dynamic>?,
-        zone: json['zone'] as Map<String, dynamic>?,
+        route: _route(json['route']),
+        zone: _zone(json['zone']),
       );
 
   static EventCount count(Map<String, dynamic> json) =>
       EventCount(present: json['present'] as int, supporters: json['supporters'] as int);
+
+  /// GeoJSON LineString → parcours.
+  static EventRoute? _route(Object? geojson) {
+    if (geojson is! Map || geojson['type'] != 'LineString') return null;
+    return EventRoute(_points(geojson['coordinates'] as List));
+  }
+
+  /// GeoJSON Polygon → zone (contour extérieur puis trous).
+  static Zone? _zone(Object? geojson) {
+    if (geojson is! Map || geojson['type'] != 'Polygon') return null;
+    return Zone([for (final ring in geojson['coordinates'] as List) _points(ring as List)]);
+  }
+
+  /// GeoJSON : [longitude, latitude].
+  static List<GeoPoint> _points(List coords) => [
+        for (final c in coords) GeoPoint((c[1] as num).toDouble(), (c[0] as num).toDouble()),
+      ];
 }

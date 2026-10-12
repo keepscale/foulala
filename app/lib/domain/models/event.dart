@@ -1,6 +1,12 @@
 import 'cause.g.dart';
+import 'route.dart';
+import 'time_slot.dart';
+import 'zone.dart';
 
 export 'cause.g.dart';
+export 'route.dart';
+export 'time_slot.dart';
+export 'zone.dart';
 
 enum EventStatus { published, cancelled }
 
@@ -38,14 +44,21 @@ class Event {
   final int segmentCount;
   final int bufferM;
 
-  /// GeoJSON du parcours (LineString) et de la zone (Polygon), tels que renvoyés par l'API.
-  final Map<String, dynamic>? route;
-  final Map<String, dynamic>? zone;
+  /// Parcours et zone de présence : absents dans la liste, chargés pour le détail.
+  final EventRoute? route;
+  final Zone? zone;
 
   bool get isCancelled => status == EventStatus.cancelled;
 
-  /// En cours : on peut dire « J'y suis ! » dès 30 min avant le début (même règle que record_presence).
-  bool isLive(DateTime now) => !isCancelled && !now.isBefore(startsAt.subtract(const Duration(minutes: 30))) && now.isBefore(endsAt);
+  /// On peut dire « J'y suis ! » dès 30 min avant le début.
+  DateTime get opensAt => startsAt.subtract(const Duration(minutes: 30));
+
+  /// Même règle que `record_presence` côté SQL : créneau entre l'ouverture et la fin.
+  bool acceptsSlot(TimeSlot slot) =>
+      !isCancelled && !slot.start.isBefore(opensAt) && !slot.start.isAfter(endsAt);
+
+  /// En cours : le « J'y suis ! » est possible maintenant.
+  bool isLive(DateTime now) => now.isBefore(endsAt) && acceptsSlot(TimeSlot.containing(now));
 
   bool isOver(DateTime now) => !now.isBefore(endsAt);
 }

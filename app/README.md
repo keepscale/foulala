@@ -36,7 +36,14 @@ lib/
 
 Le domaine définit les contrats des dépôts, la couche `data` les implémente, et `main.dart` les injecte avec `provider`. Les ViewModels ne connaissent que les interfaces : un test peut leur passer un faux dépôt.
 
-La logique sensible ira dans `domain/` sous forme d'objets valeur qui portent leurs invariants (`TimeSlot` multiple de 15 min, `PresenceToken` propre à une manif, `Segment`, `Zone`) : une valeur invalide ne doit pas pouvoir exister, donc pas pouvoir être envoyée.
+La logique sensible vit dans `domain/`, sous forme d'objets valeur qui portent leurs invariants : une valeur invalide ne peut pas exister, donc pas être envoyée.
+
+- `TimeSlot` : toujours un multiple de 15 min depuis l'epoch, en UTC.
+- `PresenceToken` : UUID v4 aléatoire, un par manif ; `toString()` n'affiche jamais le jeton complet.
+- `Segment` : 0 ≤ index < nombre de tronçons.
+- `Zone` et `EventRoute` : test « suis-je dedans ? », distance au bord, position le long du parcours, calculés sur le téléphone.
+- `PresenceReport` : le seul message qui part au « J'y suis ! » (manif, jeton, créneau, tronçon).
+- `checkPresence()` : créneau, précision ≤ 50 m, zone, dans cet ordre.
 
 ## Thème et polices
 
@@ -48,8 +55,9 @@ La logique sensible ira dans `domain/` sous forme d'objets valeur qui portent le
 
 - `flutter_map`, `latlong2` : carte OpenStreetMap
 - `geolocator` : lecture **ponctuelle** de la position (jamais en continu, jamais en arrière-plan)
-- `uuid` : jetons v4 (générateur cryptographique par défaut)
-- `shared_preferences` : ville choisie, puis jetons et file d'envoi hors ligne
+- `shared_preferences` : ville choisie, jetons par manif et file d'envoi hors ligne
+
+Les jetons UUID v4 sont tirés par `PresenceToken.generate()` avec `Random.secure()` de Dart, sans paquet : une dépendance de moins sur le code le plus sensible.
 - `provider`, `http`, `flutter_svg` : injection, appels à l'API, icônes des maquettes
 
 ## Interdits
@@ -60,17 +68,19 @@ Aucun SDK d'analytics, de publicité ou de crash reporting qui envoie des donné
 
 Relevés lors de l'ajout des paquets. Ils sont à régler avant la première vraie manif.
 
-- [ ] **Tuiles de carte.** `tile.openstreetmap.org` voit l'adresse IP et la zone affichée, donc quelle manif on consulte. Il faut servir les tuiles derrière notre Caddy sans journal, ou choisir un fournisseur qui ne journalise pas. `flutter_map` envoie aussi un `User-Agent` qui contient le nom du paquet de l'app.
-- [ ] **Position sur Android.** Par défaut, `geolocator` passe par le service de localisation de Google Play, qui peut envoyer à Google les Wi-Fi et antennes alentour. Appeler `getCurrentPosition` avec `AndroidSettings(forceLocationManager: true)` pour n'utiliser que le GPS. La bibliothèque Play Services reste incluse dans l'app.
-- [ ] **Sauvegarde iCloud.** Sur iOS, `shared_preferences` (NSUserDefaults) part dans la sauvegarde iCloud. Ranger les jetons dans un fichier exclu de la sauvegarde (`isExcludedFromBackup`) ou dans le trousseau avec `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`.
+- [ ] **Sauvegarde iCloud.** Sur iOS, `shared_preferences` (NSUserDefaults) part dans la sauvegarde iCloud : les jetons par manif et la file d'envoi y sont maintenant stockés. Les ranger dans un fichier exclu de la sauvegarde (`isExcludedFromBackup`) ou dans le trousseau avec `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`. **Bloquant avant toute diffusion iOS.**
+- [ ] **Tuiles de carte**, si on ajoute un vrai fond de carte. Pour l'instant le parcours est un schéma dessiné sur le téléphone (`RouteSketch`), sans aucune tuile. Avec `flutter_map`, `tile.openstreetmap.org` verrait l'adresse IP et la zone affichée, donc quelle manif on consulte : servir les tuiles derrière notre Caddy sans journal, ou choisir un fournisseur qui ne journalise pas. `flutter_map` envoie aussi un `User-Agent` qui contient le nom du paquet de l'app.
+- [x] **Position sur Android.** `GeolocatorLocationReader` appelle `getCurrentPosition` avec `AndroidSettings(forceLocationManager: true)` : GPS seul, sans le service de localisation de Google Play. La bibliothèque Play Services reste incluse dans l'app.
 
-Déjà fait : la sauvegarde automatique Android est coupée (`allowBackup="false"` dans `AndroidManifest.xml`), et la localisation en arrière-plan n'est pas demandée.
+Déjà fait : la sauvegarde automatique Android est coupée (`allowBackup="false"` dans `AndroidManifest.xml`), la localisation en arrière-plan n'est pas demandée, et la position n'est lue qu'une fois par appui sur « J'y suis ! ».
 
 ## Écrans (voir les maquettes)
 
-1. Liste des manifs par ville, avec filtres par cause
-2. Détail : carte, zone, revendications, boutons « Je soutiens » et « J'y suis ! »
-3. Confirmation : envoyée, en attente de réseau, ou hors de la zone
+1. ✅ Liste des manifs par ville, avec filtres par cause
+2. ✅ Détail : schéma du parcours et de la zone, revendications, bouton « J'y suis ! » (« Je soutiens » à faire)
+3. ✅ « J'y suis ! » : envoyée, en attente de réseau, hors de la zone, position imprécise ou refusée
 4. Compteur en direct : total, arrivées par quart d'heure, densité par tronçon
+
+Pour tester « J'y suis ! » sur l'émulateur : `adb emu geo fix 4.8320 45.7578` (Bellecour, sur le parcours de la marche en cours de `db/seed.sql`), ou le menu **⋯ › Location** de l'émulateur.
 
 Thèmes par cause : générés depuis `design/tokens.json`.

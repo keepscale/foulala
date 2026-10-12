@@ -4,6 +4,7 @@ import '../../core/themes/theme.dart';
 import '../../core/themes/tokens.g.dart';
 import '../../core/ui/foulala_icon.dart';
 import '../../core/ui/logo.dart';
+import '../../event_detail/widgets/event_detail_screen.dart';
 import '../view_models/events_view_model.dart';
 import 'cause_filter_bar.dart';
 import 'city_picker.dart';
@@ -42,6 +43,12 @@ class _EventsScreenState extends State<EventsScreen> {
     if (_pickerShown || !vm.needsCity || vm.failed) return;
     _pickerShown = true;
     WidgetsBinding.instance.addPostFrameCallback((_) => _pickCity());
+  }
+
+  /// Détail d'une manif ; au retour, les compteurs sont relus.
+  Future<void> _open(String eventId) async {
+    await Navigator.of(context).push(eventDetailRoute(eventId));
+    await vm.refresh();
   }
 
   Future<void> _pickCity() async {
@@ -101,15 +108,24 @@ class _EventsScreenState extends State<EventsScreen> {
                   sliver: SliverList.list(children: [
                     if (live.isNotEmpty) ...[
                       const _SectionTitle('En ce moment'),
-                      for (final s in live) ...[LiveEventCard(summary: s), const SizedBox(height: 10)],
+                      for (final s in live) ...[
+                        LiveEventCard(summary: s, onTap: () => _open(s.event.id)),
+                        const SizedBox(height: 10),
+                      ],
                     ],
                     if (upcoming.isNotEmpty) ...[
                       const _SectionTitle('À venir'),
-                      for (final s in upcoming) ...[EventRow(summary: s, now: now), const SizedBox(height: 10)],
+                      for (final s in upcoming) ...[
+                        EventRow(summary: s, now: now, onTap: () => _open(s.event.id)),
+                        const SizedBox(height: 10),
+                      ],
                     ],
                     if (past.isNotEmpty) ...[
                       const _SectionTitle('Terminées'),
-                      for (final s in past) ...[EventRow(summary: s, now: now), const SizedBox(height: 10)],
+                      for (final s in past) ...[
+                        EventRow(summary: s, now: now, onTap: () => _open(s.event.id)),
+                        const SizedBox(height: 10),
+                      ],
                     ],
                   ]),
                 ),

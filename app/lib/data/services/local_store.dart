@@ -2,16 +2,29 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Stockage local, qui ne quitte jamais le téléphone.
 ///
-/// Vie privée : sur iOS, ces données partent dans la sauvegarde iCloud.
-/// Avant d'y ranger des jetons, voir « Vie privée : points à traiter » dans app/README.md.
+/// Vie privée : la sauvegarde Android est coupée (allowBackup="false"), mais sur iOS
+/// ces données partent dans la sauvegarde iCloud. À régler avant la première vraie manif :
+/// voir « Vie privée : points à traiter » dans app/README.md.
 class LocalStore {
   LocalStore(this._prefs);
 
   final SharedPreferencesAsync _prefs;
 
   static const _cityKey = 'city';
+  static const _pendingKey = 'pending_presences';
+  static String _tokenKey(String eventId) => 'token.$eventId';
 
   Future<String?> getCity() => _prefs.getString(_cityKey);
 
   Future<void> setCity(String city) => _prefs.setString(_cityKey, city);
+
+  Future<String?> getToken(String eventId) => _prefs.getString(_tokenKey(eventId));
+
+  Future<void> setToken(String eventId, String token) => _prefs.setString(_tokenKey(eventId), token);
+
+  /// File d'envoi hors ligne, une entrée JSON par présence.
+  Future<List<String>> getPending() async => await _prefs.getStringList(_pendingKey) ?? const [];
+
+  Future<void> setPending(List<String> entries) =>
+      entries.isEmpty ? _prefs.remove(_pendingKey) : _prefs.setStringList(_pendingKey, entries);
 }

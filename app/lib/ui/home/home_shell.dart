@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../domain/repositories/presence_repository.dart';
 import '../core/themes/theme.dart';
 import '../core/themes/tokens.g.dart';
 import '../core/ui/foulala_icon.dart';
@@ -20,9 +21,23 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _tab = 0;
   late final EventsViewModel _events = EventsViewModel(events: context.read(), cities: context.read())..load();
+  late final AppLifecycleListener _lifecycle;
+
+  @override
+  void initState() {
+    super.initState();
+    // Présences en attente de réseau : renvoyées au démarrage et à chaque retour dans l'app.
+    _flushPending();
+    _lifecycle = AppLifecycleListener(onResume: _flushPending);
+  }
+
+  void _flushPending() {
+    context.read<PresenceRepository>().flushPending(now: DateTime.now()).catchError((Object _) {});
+  }
 
   @override
   void dispose() {
+    _lifecycle.dispose();
     _events.dispose();
     super.dispose();
   }
