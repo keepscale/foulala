@@ -1,0 +1,15 @@
+# Pas de directive `log` : Caddy n'écrit donc aucun journal d'accès.
+# Ne JAMAIS en ajouter : l'adresse IP relierait une personne à une manif.
+
+{$DOMAIN} {
+	encode zstd gzip
+	header -Server
+
+	reverse_proxy api:3000 {
+		# PostgREST n'a pas besoin de connaître l'IP du client.
+		header_up -X-Forwarded-For
+		header_up -X-Real-IP
+	}
+
+	# TODO : limite de débit par IP, en mémoire uniquement (module caddy-ratelimit).
+}

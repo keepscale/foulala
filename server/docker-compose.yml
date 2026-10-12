@@ -1,0 +1,72 @@
+# Foulala : serveur minimal (PostgreSQL + PostGIS + pg_cron, PostgREST, Caddy)
+# Lancement : cp .env.example .env  (puis remplir)  &&  docker compose up -d
+#
+# Vie privée : aucun service ne journalise les requêtes ni les adresses IP.
+#   - Caddy n'écrit pas de journal d'accès (aucune directive `log`) et retire X-Forwarded-For.
+#   - PostgREST ne journalise que les erreurs critiques.
+#   - PostgreSQL ne journalise ni connexions ni requêtes.
+
+services:
+  db:
+    build: ./db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: foulala
+      POSTGRES_USER: foulala
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?à définir dans .env}
+      AUTHENTICATOR_PASSWORD: ${AUTHENTICATOR_PASSWORD:?à définir dans .env}
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_cron
+      - -c
+      - cron.database_name=foulala
+      - -c
+      - log_connections=off
+      - -c
+      - log_disconnections=off
+      - -c
+      - log_statement=none
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../db/schema.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
+      - ../db/api.sql:/docker-entrypoint-initdb.d/20-api.sql:ro
+      - ./initdb/30-authenticator.sh:/docker-entrypoint-initdb.d/30-authenticator.sh:ro
+      - ./initdb/40-cron.sql:/docker-entrypoint-initdb.d/40-cron.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U foulala -d foulala"]
+      interval: 10s
+      retries: 5
+
+  api:
+    image: postgrest/postgrest:v12.2.3
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${AUTHENTICATOR_PASSWORD}@db:5432/foulala
+      PGRST_DB_SCHEMAS: api
+      PGRST_DB_ANON_ROLE: web_anon
+      PGRST_LOG_LEVEL: crit
+      PGRST_OPENAPI_SERVER_PROXY_URI: https://${DOMAIN}
+
+  caddy:
+    image: caddy:2.8
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?à définir dans .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,37 @@
+name: Base de données
+
+on:
+  push:
+    paths: ["db/**", "server/**", "scripts/db-test.sh", ".github/workflows/db.yml"]
+  pull_request:
+    paths: ["db/**", "server/**", "scripts/db-test.sh", ".github/workflows/db.yml"]
+
+jobs:
+  tests-sql:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tests SQL
+        run: ./scripts/db-test.sh
+
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Valide docker-compose
+        working-directory: server
+        run: cp .env.example .env && docker compose config -q
