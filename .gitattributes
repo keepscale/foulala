@@ -3,3 +3,7 @@
 *.sh       text eol=lf
 *.sql      text eol=lf
 Caddyfile  text eol=lf
+
+# Dart en LF : les fichiers *.g.dart sont comparés à la sortie du générateur
+# (test/tokens_test.dart), qui écrit en LF.
+*.dart     text eol=lf

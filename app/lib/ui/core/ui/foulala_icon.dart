@@ -1,0 +1,52 @@
+import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../../domain/models/cause.g.dart';
+import '../themes/tokens.g.dart';
+
+/// Icônes en trait, reprises des maquettes (design/maquettes). Jamais d'emoji.
+/// Les noms des icônes de cause sont ceux de design/tokens.json.
+enum FoulalaIcons {
+  // Causes
+  leaf('<path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15"/><path d="M5 19c3-4 6-7 10-9"/>'),
+  rainbow('<path d="M2 20a10 10 0 0 1 20 0"/><path d="M6 20a6 6 0 0 1 12 0"/><path d="M10 20a2 2 0 0 1 4 0"/>'),
+  peace('<circle cx="12" cy="12" r="9"/><path d="M12 3v18M12 12l-6.4 6.4M12 12l6.4 6.4"/>'),
+  megaphone('<path d="M3 10v4h3l8 4.5V5.5L6 10H3z"/><path d="M17.5 9a4 4 0 0 1 0 6"/>'),
+  cross('<path d="M9.5 3.5h5v6h6v5h-6v6h-5v-6h-6v-5h6z"/>'),
+  graduation('<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/>'),
+  flag('<path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/>'),
+  // Interface
+  pin('<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>'),
+  chevronDown('<path d="M6 9l6 6 6-6"/>'),
+  arrowRight('<path d="M5 12h14M13 6l6 6-6 6"/>'),
+  list('<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>'),
+  heart('<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>'),
+  shield('<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/>'),
+  check('<path d="M5 12.5l4.5 4.5L19 7.5"/>');
+
+  const FoulalaIcons(this.paths);
+  final String paths;
+
+  static FoulalaIcons forCause(Cause cause) => FoulalaIcons.values.byName(cause.theme.icon);
+}
+
+class FoulalaIcon extends StatelessWidget {
+  const FoulalaIcon(this.icon, {super.key, this.size = 22, this.color = FoulalaColors.text, this.strokeWidth = 2.2});
+
+  final FoulalaIcons icon;
+  final double size;
+  final Color color;
+  final double strokeWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    final svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" '
+        'stroke-width="$strokeWidth" stroke-linecap="round" stroke-linejoin="round">${icon.paths}</svg>';
+    return SvgPicture.string(
+      svg,
+      width: size,
+      height: size,
+      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+    );
+  }
+}

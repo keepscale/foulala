@@ -1,18 +1,56 @@
 # App mobile (Flutter)
 
-À initialiser :
+## Lancer
 
 ```bash
-cd app
-flutter create --org org.foulala --project-name foulala --platforms android,ios .
+# Serveur de dev (base + API + données de test), depuis la racine du dépôt
+cd server && docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db api
+
+# App sur l'émulateur Android (l'API de dev est vue en http://10.0.2.2:3000)
+cd app && flutter run
+# Autre serveur : flutter run --dart-define=API_URL=https://api.exemple.fr
+
+flutter test      # tests
+flutter analyze   # analyse statique
 ```
 
-## Paquets prévus
+Le HTTP en clair n'est autorisé qu'en debug, et seulement vers `10.0.2.2` et `localhost` (`android/app/src/debug/res/xml/network_security_config.xml`).
 
-- `flutter_map` : carte OpenStreetMap
+## Architecture
+
+Architecture officielle de Flutter (MVVM), voir `docs/decisions.md` :
+
+```
+lib/
+  config.dart                 adresse de l'API (--dart-define=API_URL)
+  domain/models/              Event, EventCount, Cause : Dart pur, sans Flutter ni JSON
+  domain/repositories/        interfaces : EventRepository, CityRepository
+  data/services/              FoulalaApi (HTTP), LocalStore (stockage local)
+  data/mappers/               JSON de l'API → modèles du domaine
+  data/repositories/          implémentations : EventRepositoryRemote, CityRepositoryLocal
+  ui/core/themes/             thème, tokens.g.dart (généré)
+  ui/core/ui/                 icônes, logo, décors par cause
+  ui/<écran>/view_models/     un ChangeNotifier par écran
+  ui/<écran>/widgets/         les vues
+```
+
+Le domaine définit les contrats des dépôts, la couche `data` les implémente, et `main.dart` les injecte avec `provider`. Les ViewModels ne connaissent que les interfaces : un test peut leur passer un faux dépôt.
+
+La logique sensible ira dans `domain/` sous forme d'objets valeur qui portent leurs invariants (`TimeSlot` multiple de 15 min, `PresenceToken` propre à une manif, `Segment`, `Zone`) : une valeur invalide ne doit pas pouvoir exister, donc pas pouvoir être envoyée.
+
+## Thème et polices
+
+- `lib/domain/models/cause.g.dart` et `lib/ui/core/themes/tokens.g.dart` sont **générés** depuis `design/tokens.json` : `dart run tool/gen_tokens.dart`. Un test échoue s'ils ne sont plus à jour.
+- Polices embarquées dans `assets/fonts/` (licence OFL), jamais téléchargées. Bricolage Grotesque et Figtree sont variables : utiliser `FoulalaText.display()` et `FoulalaText.body()`, qui règlent la graisse avec `FontVariation`.
+- Textes de l'interface au vouvoiement, comme dans les maquettes.
+
+## Paquets
+
+- `flutter_map`, `latlong2` : carte OpenStreetMap
 - `geolocator` : lecture **ponctuelle** de la position (jamais en continu, jamais en arrière-plan)
-- `uuid` : jetons v4
-- un stockage local (par exemple `shared_preferences`) pour les jetons et la file d'envoi hors ligne
+- `uuid` : jetons v4 (générateur cryptographique par défaut)
+- `shared_preferences` : ville choisie, puis jetons et file d'envoi hors ligne
+- `provider`, `http`, `flutter_svg` : injection, appels à l'API, icônes des maquettes
 
 ## Interdits
 

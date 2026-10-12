@@ -28,3 +28,9 @@ Un seul code pour iOS et Android. Cartes OpenStreetMap via `flutter_map`.
 
 ## 2026-10 · Un thème visuel par cause
 Climat, Fiertés, Paix, Social, Santé, Éducation, Autre. L'organisateur choisit, les couleurs suivent partout. Les manifs contre la guerre sont classées « Paix » : on nomme ce qu'on défend.
+
+## 2026-10 · Architecture de l'app : MVVM officiel de Flutter, pas Bloc
+Couches `data` (services et dépôts), `domain` (Dart pur) et `ui` (une vue et un `ChangeNotifier` par écran), injectées avec `provider`. Chaque paquet ajouté est du code tiers à auditer sur un téléphone qui touche à des opinions politiques : on en garde le moins possible. La logique sensible (test de zone, créneau, tronçon, jeton, file d'envoi) vit dans `domain`, testée sans framework. Écartés : Bloc (verbeux pour quatre écrans), Riverpod (une dépendance et un modèle mental de plus pour les contributeurs).
+
+## 2026-10 · Polices embarquées dans l'app
+Bricolage Grotesque, Figtree et IBM Plex Mono sont livrées avec l'app, sans le paquet `google_fonts` : il les téléchargerait depuis les serveurs de Google, qui verraient passer l'adresse IP de chaque utilisateur.

@@ -9,7 +9,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>Foulala</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Foulala lit ta position une seule fois, quand tu appuies sur « J'y suis ! », pour vérifier sur ton téléphone que tu es dans la zone de la manif. Ta position n'est jamais envoyée.</string>
+	<string>Foulala lit votre position une seule fois, quand vous appuyez sur « J'y suis ! », pour vérifier sur votre téléphone que vous êtes dans la zone de la manif. Votre position n'est jamais envoyée.</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

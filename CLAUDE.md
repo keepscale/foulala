@@ -70,7 +70,7 @@ Les trois états de l'écran : présence envoyée, en attente de réseau, hors d
 ```
 db/        schema.sql, api.sql, tests/*.sql   → la source de vérité ; seed.sql (données de dev)
 server/    docker-compose (PostGIS+pg_cron, PostgREST, Caddy), docker-compose.dev.yml, Caddyfile, initdb/
-app/       app Flutter participants
+app/       app Flutter participants (MVVM officiel de Flutter, voir app/README.md)
 web/       page web organisateur (à initialiser)
 design/    tokens.json (couleurs par cause, typo), lien vers les maquettes
 docs/      méthode de comptage, vie privée, décisions
@@ -90,6 +90,10 @@ cd server && cp .env.example .env && docker compose up -d
 
 # Serveur de dev : base + API sur 127.0.0.1:3000 (10.0.2.2:3000 depuis l'émulateur), avec db/seed.sql
 cd server && docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db api
+
+# App : tests, et régénération des couleurs après un changement de design/tokens.json
+cd app && flutter test && flutter analyze
+cd app && dart run tool/gen_tokens.dart
 
 # Tests SQL dans le conteneur de dev (sans psql local)
 docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T -e PGUSER=foulala db bash /repo/scripts/db-test.sh
