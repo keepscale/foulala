@@ -1,0 +1,5 @@
+# Fichiers exécutés dans les conteneurs Linux : toujours en LF, même sous Windows
+# (sinon `#!/usr/bin/env bash\r` fait échouer l'initialisation de la base).
+*.sh       text eol=lf
+*.sql      text eol=lf
+Caddyfile  text eol=lf
