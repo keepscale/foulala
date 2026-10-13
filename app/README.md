@@ -55,7 +55,7 @@ La logique sensible vit dans `domain/`, sous forme d'objets valeur qui portent l
 
 - `flutter_map`, `latlong2` : carte OpenStreetMap
 - `geolocator` : lecture **ponctuelle** de la position (jamais en continu, jamais en arrière-plan)
-- `shared_preferences` : ville choisie, jetons par manif (présence et soutien), file d'envoi hors ligne, liste « Mes soutiens »
+- `path_provider` : dossier privé de l'app, où `PrivateFile` garde un fichier JSON avec la ville choisie, les jetons par manif (présence et soutien), la file d'envoi hors ligne et la liste « Mes soutiens »
 
 Les jetons UUID v4 sont tirés par `PresenceToken.generate()` avec `Random.secure()` de Dart, sans paquet : une dépendance de moins sur le code le plus sensible.
 - `provider`, `http`, `flutter_svg` : injection, appels à l'API, icônes des maquettes
@@ -68,11 +68,13 @@ Aucun SDK d'analytics, de publicité ou de crash reporting qui envoie des donné
 
 Relevés lors de l'ajout des paquets. Ils sont à régler avant la première vraie manif.
 
-- [ ] **Sauvegarde iCloud.** Sur iOS, `shared_preferences` (NSUserDefaults) part dans la sauvegarde iCloud : les jetons par manif, la file d'envoi et la liste des manifs soutenues y sont maintenant stockés. Les ranger dans un fichier exclu de la sauvegarde (`isExcludedFromBackup`) ou dans le trousseau avec `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`. **Bloquant avant toute diffusion iOS.**
+- [x] **Sauvegardes.** Les données locales vivent dans un seul fichier, `private/store.json` (`lib/data/services/private_file.dart`), et plus dans `shared_preferences` : sur iOS, NSUserDefaults partait dans la sauvegarde iCloud.
+  - iOS : le dossier est marqué `isExcludedFromBackup` au démarrage, par le canal `foulala/backup` (`ios/Runner/AppDelegate.swift`). Le trousseau a été écarté : ses entrées survivent à la désinstallation de l'app. **À vérifier sur un vrai iPhone avant toute diffusion iOS**, car le code Swift n'a pas encore été compilé (pas de Mac).
+  - Android : `allowBackup="false"`, plus `res/xml/data_extraction_rules.xml`, qui exclut tout de la sauvegarde et du transfert d'appareil à appareil. Depuis Android 12, `allowBackup` seul ne bloque plus ce transfert.
 - [ ] **Tuiles de carte**, si on ajoute un vrai fond de carte. Pour l'instant le parcours est un schéma dessiné sur le téléphone (`RouteSketch`), sans aucune tuile. Avec `flutter_map`, `tile.openstreetmap.org` verrait l'adresse IP et la zone affichée, donc quelle manif on consulte : servir les tuiles derrière notre Caddy sans journal, ou choisir un fournisseur qui ne journalise pas. `flutter_map` envoie aussi un `User-Agent` qui contient le nom du paquet de l'app.
 - [x] **Position sur Android.** `GeolocatorLocationReader` appelle `getCurrentPosition` avec `AndroidSettings(forceLocationManager: true)` : GPS seul, sans le service de localisation de Google Play. La bibliothèque Play Services reste incluse dans l'app.
 
-Déjà fait : la sauvegarde automatique Android est coupée (`allowBackup="false"` dans `AndroidManifest.xml`), la localisation en arrière-plan n'est pas demandée, et la position n'est lue qu'une fois par appui sur « J'y suis ! ».
+Déjà fait : la localisation en arrière-plan n'est pas demandée, et la position n'est lue qu'une fois par appui sur « J'y suis ! ».
 
 ## Écrans (voir les maquettes)
 
@@ -91,7 +93,7 @@ Déjà fait : la sauvegarde automatique Android est coupée (`allowBackup="false
 
 ### Compteur
 
-- Toute barre d'arrivées sous 20 est hachurée, comme les cases de densité. La vue `event_density` applique déjà le seuil côté serveur, et l'app le réapplique. `event_timeline` ne l'applique pas encore : à corriger côté SQL.
+- Toute barre d'arrivées sous 20 est hachurée, comme les cases de densité. Les vues `event_timeline` et `event_density` appliquent déjà le seuil côté serveur, et l'app le réapplique.
 
 Pour tester « J'y suis ! » sur l'émulateur : `adb emu geo fix 4.8320 45.7578` (Bellecour, sur le parcours de la marche en cours de `db/seed.sql`), ou le menu **⋯ › Location** de l'émulateur.
 
