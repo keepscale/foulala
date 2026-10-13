@@ -25,20 +25,51 @@ npm run build        # construit dist/ (vérifie aussi les types)
 
 ## Écrans
 
-1. **Connexion** : e-mail et mot de passe. Les comptes sont créés sur invitation (`public.create_organizer`, voir `db/organizer.sql`).
-2. **Mes manifestations** : brouillons, publiées, annulées, terminées, avec le comptage. Actions : modifier, publier, supprimer un brouillon, annuler une manif publiée.
+### Espace organisateur
+
+1. **Connexion** : e-mail et mot de passe. Les comptes sont créés sur invitation, depuis l'administration (ou `public.create_organizer` en SQL).
+2. **Mes manifestations** : brouillons, publiées, annulées, terminées, avec le comptage. Actions : modifier, publier, supprimer un brouillon, annuler une manif publiée. Une manif masquée par la modération l'indique, avec le motif.
 3. **Création et modification** : cause, informations, revendications, déclaration, tracé du parcours sur la carte, largeur de la zone. Une manif publiée ne se modifie plus : son parcours et ses horaires fondent le comptage.
+4. **Mot de passe** (`#/mot-de-passe`) : remplacer le mot de passe provisoire reçu à l'invitation.
+
+### Administration (`#/admin`)
+
+Bandeau sombre, session séparée de celle des organisateurs, jeton d'une heure.
+
+1. **Connexion** : e-mail, mot de passe et code à 6 chiffres d'une appli d'authentification (TOTP).
+2. **Pilotage** : chiffres clés, manifs par état, par cause et par ville, santé du système (purges en retard, dernière purge automatique, jetons en base, taille de la base).
+3. **Manifestations** : toutes les manifs publiées ou annulées, recherche et filtres. **Masquer** (motif obligatoire) retire la manif de l'app et bloque les nouveaux « J'y suis ! » et soutiens ; **Rétablir** l'annule.
+4. **Collectifs** : inviter un collectif (mot de passe provisoire montré une fois), créer un nouveau mot de passe, suspendre (motif obligatoire) ou réactiver.
+5. **Journal** : les 200 dernières actions, avec leur auteur et leur motif.
+
+L'administration ne voit jamais un jeton, une présence ou un soutien isolé : seulement des comptes, des manifs et des totaux.
+
+#### Créer un compte administrateur
+
+Uniquement sur le serveur, jamais depuis la page. Dans un `psql` interactif (pour que la phrase de passe ne reste pas dans l'historique du shell) :
+
+```bash
+cd server && docker compose exec db psql -U foulala -d foulala
+```
+```sql
+\prompt 'Phrase de passe (16 caractères au moins) : ' pwd
+SELECT public.create_admin('Prénom', 'moi@example.org', :'pwd');
+```
+
+La fonction renvoie une adresse `otpauth://…`, affichée une seule fois. Dans l'appli d'authentification (Aegis, FreeOTP, Google Authenticator…), choisir « saisir une clé » et recopier la valeur de `secret=`, ou transformer l'adresse en QR code **hors ligne** (jamais avec un site web). Pour retirer un accès : `UPDATE private.admin_account SET disabled_at = now() WHERE email = '…';`, effet immédiat.
 
 ## Organisation
 
 ```
 src/
-  main.ts            routes (#/connexion, #/, #/nouvelle, #/manif/<id>)
-  api.ts             client PostgREST, session dans sessionStorage
+  main.ts            routes (#/connexion, #/, #/nouvelle, #/manif/<id>, #/mot-de-passe, #/admin/…)
+  api.ts             client PostgREST, sessions organisateur et admin séparées, dans sessionStorage
   theme.ts           thèmes par cause, lus dans design/tokens.json
   route-editor.ts    carte Leaflet : tracé, déplacement des points, aperçu de la zone
   layout.ts, dom.ts  en-tête, logo, formatage, construction du DOM sans innerHTML
-  views/             login, list, edit
+  admin-layout.ts    en-tête et onglets de l'administration, formulaire de motif, mot de passe provisoire
+  views/             login, list, edit, password
+  views/admin/       login, overview (pilotage), events (modération), organizers (collectifs), journal
 ```
 
 Les couleurs viennent de `design/tokens.json`, le logo de `design/logo.svg`, les polices de `app/assets/fonts/` : rien n'est dupliqué.

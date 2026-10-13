@@ -20,6 +20,7 @@ export function header(): HTMLElement {
       s && h('div', { class: 'account' },
         h('span', { class: 'avatar', 'aria-hidden': 'true' }, initials(s.name)),
         h('span', { class: 'account-name' }, s.name),
+        h('a', { href: '#/mot-de-passe', class: 'btn btn-ghost' }, icon(ICONS.key), 'Mot de passe'),
         h('button', {
           type: 'button', class: 'btn btn-ghost', onclick: () => {
             logout();

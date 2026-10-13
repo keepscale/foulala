@@ -44,6 +44,7 @@ export function loginView(root: HTMLElement): void {
     h('p', { class: 'small muted' },
       'Les comptes sont créés sur invitation, pour éviter les fausses manifs. ',
       'Les participants, eux, n\'ont jamais de compte.'),
+    h('p', { class: 'small muted' }, h('a', { href: '#/admin/connexion' }, 'Administration')),
   );
 
   root.replaceChildren(h('main', { class: 'login-page' }, form));

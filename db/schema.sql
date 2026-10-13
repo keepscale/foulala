@@ -19,7 +19,9 @@ CREATE TABLE organizer (
     name          text NOT NULL,              -- collectif, syndicat, association…
     email         text NOT NULL UNIQUE,
     password_hash text NOT NULL,              -- bcrypt (pgcrypto), voir db/organizer.sql
-    created_at    timestamptz NOT NULL DEFAULT now()
+    created_at    timestamptz NOT NULL DEFAULT now(),
+    suspended_at  timestamptz,                -- suspendu par l'administration : plus de connexion (db/admin.sql)
+    suspended_reason text
 );
 
 
@@ -50,6 +52,8 @@ CREATE TABLE event (
     declared      boolean NOT NULL DEFAULT false,       -- déclarée en préfecture/mairie (déclaratif, non vérifié)
     status        event_status NOT NULL DEFAULT 'draft',
     purged_at     timestamptz,                          -- jetons supprimés : seuls les totaux restent
+    hidden_at     timestamptz,                          -- masquée par la modération : retirée de l'app (db/admin.sql)
+    hidden_reason text,
     created_at    timestamptz NOT NULL DEFAULT now(),
     CHECK (ends_at > starts_at)
 );
@@ -126,7 +130,7 @@ DECLARE
 BEGIN
     -- FOR SHARE : empêche une purge de passer entre la vérification et l'insertion
     SELECT * INTO e FROM event WHERE id = p_event FOR SHARE;
-    IF NOT FOUND OR e.status <> 'published' OR e.purged_at IS NOT NULL THEN
+    IF NOT FOUND OR e.status <> 'published' OR e.purged_at IS NOT NULL OR e.hidden_at IS NOT NULL THEN
         RAISE EXCEPTION 'manifestation indisponible';
     END IF;
     IF p_slot < e.starts_at - interval '30 minutes' OR p_slot > e.ends_at OR p_slot > now() THEN
@@ -151,7 +155,7 @@ DECLARE
     n integer;
 BEGIN
     SELECT * INTO e FROM event WHERE id = p_event FOR SHARE;
-    IF NOT FOUND OR e.status <> 'published' OR e.purged_at IS NOT NULL THEN
+    IF NOT FOUND OR e.status <> 'published' OR e.purged_at IS NOT NULL OR e.hidden_at IS NOT NULL THEN
         RAISE EXCEPTION 'manifestation indisponible';
     END IF;
 

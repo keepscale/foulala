@@ -57,4 +57,4 @@ Le *Security Advisor* de Supabase signalera PostGIS installé dans `public` : c'
 
 ## Espace organisateur
 
-`db/organizer.sql` (connexion des organisateurs, création de manifs) n'est **pas** inclus dans le script Supabase : il signe ses propres jetons, alors que Supabase gère les siens. Pour tester la page organisateur, utiliser le serveur de dev local (`server/docker-compose.dev.yml`).
+`db/organizer.sql` (connexion des organisateurs, création de manifs) et `db/admin.sql` (administration) ne sont **pas** inclus dans le script Supabase : il signe ses propres jetons, alors que Supabase gère les siens. Pour tester la page organisateur, utiliser le serveur de dev local (`server/docker-compose.dev.yml`).

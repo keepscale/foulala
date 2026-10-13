@@ -33,6 +33,7 @@ services:
       - ../db/schema.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
       - ../db/api.sql:/docker-entrypoint-initdb.d/20-api.sql:ro
       - ../db/organizer.sql:/docker-entrypoint-initdb.d/25-organizer.sql:ro
+      - ../db/admin.sql:/docker-entrypoint-initdb.d/26-admin.sql:ro
       - ./initdb/30-authenticator.sh:/docker-entrypoint-initdb.d/30-authenticator.sh:ro
       - ./initdb/40-cron.sql:/docker-entrypoint-initdb.d/40-cron.sql:ro
     healthcheck:

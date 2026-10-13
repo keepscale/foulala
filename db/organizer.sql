@@ -63,14 +63,20 @@ AS $$
     FROM parts;
 $$;
 
--- Organisateur du jeton en cours (jamais NULL : erreur sinon)
+-- Organisateur du jeton en cours (jamais NULL : erreur sinon).
+-- Un compte suspendu par l'administration perd aussitôt ses droits, même avec un jeton encore valide.
 CREATE FUNCTION private.current_organizer() RETURNS uuid
-LANGUAGE plpgsql STABLE AS $$
+LANGUAGE plpgsql STABLE
+SET search_path = public, pg_temp
+AS $$
 DECLARE
     sub text := current_setting('request.jwt.claims', true)::json ->> 'sub';
 BEGIN
     IF sub IS NULL THEN
         RAISE EXCEPTION 'connexion requise' USING ERRCODE = '28000';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM organizer WHERE id = sub::uuid AND suspended_at IS NULL) THEN
+        RAISE EXCEPTION 'compte suspendu ou supprimé' USING ERRCODE = '28000';
     END IF;
     RETURN sub::uuid;
 END $$;
@@ -200,6 +206,11 @@ BEGIN
     IF NOT ok THEN
         RAISE EXCEPTION 'e-mail ou mot de passe incorrect' USING ERRCODE = '28P01';
     END IF;
+    -- Seulement après le bon mot de passe : on ne révèle rien aux autres
+    IF o.suspended_at IS NOT NULL THEN
+        RAISE EXCEPTION 'compte suspendu par l''administration de Foulala : écrivez-nous pour en savoir plus'
+            USING ERRCODE = '28000';
+    END IF;
 
     RETURN json_build_object(
         'token', private.sign_jwt(json_build_object(
@@ -227,16 +238,41 @@ SELECT e.id,
        e.segment_count,
        e.purged_at,
        e.created_at,
+       e.hidden_at,                -- masquée par la modération, avec le motif : le collectif sait pourquoi
+       e.hidden_reason,
        ST_AsGeoJSON(e.route)::json AS route,
        ST_AsGeoJSON(e.zone)::json  AS zone,
        c.present,
        c.supporters
 FROM public.event e
+JOIN public.organizer o ON o.id = e.organizer_id AND o.suspended_at IS NULL
 LEFT JOIN public.event_count c ON c.event_id = e.id
 WHERE e.organizer_id = (current_setting('request.jwt.claims', true)::json ->> 'sub')::uuid;
 
 
 -- Écriture ------------------------------------------------------------
+-- POST /rpc/change_password {"current_password", "new_password"}
+-- Un compte invité reçoit un mot de passe provisoire : le collectif le remplace ici.
+CREATE FUNCTION api.change_password(current_password text, new_password text) RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+DECLARE
+    me   uuid := private.current_organizer();
+    hash text;
+BEGIN
+    SELECT password_hash INTO hash FROM organizer WHERE id = me FOR UPDATE;
+    IF hash NOT LIKE '$2%' OR crypt(coalesce(current_password, ''), hash) <> hash THEN
+        -- 22023 plutôt que 28P01 : PostgREST répondrait 403, et la page déconnecterait le collectif
+        RAISE EXCEPTION 'mot de passe actuel incorrect' USING ERRCODE = '22023';
+    END IF;
+    IF length(coalesce(new_password, '')) < 12 THEN
+        RAISE EXCEPTION 'le nouveau mot de passe doit faire 12 caractères au moins' USING ERRCODE = '22023';
+    END IF;
+    UPDATE organizer SET password_hash = crypt(new_password, gen_salt('bf', 12)) WHERE id = me;
+END $$;
+
 -- POST /rpc/create_event → id de la manif, en brouillon
 CREATE FUNCTION api.create_event(
     title text, cause event_cause, city text, starts_at timestamptz, ends_at timestamptz,
@@ -362,6 +398,7 @@ DECLARE
     f text;
 BEGIN
     FOREACH f IN ARRAY ARRAY[
+        'api.change_password(text, text)',
         'api.create_event(text, event_cause, text, timestamptz, timestamptz, json, integer, text, text[], boolean)',
         'api.update_event(uuid, text, event_cause, text, timestamptz, timestamptz, json, integer, text, text[], boolean)',
         'api.delete_draft(uuid)',

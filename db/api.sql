@@ -48,16 +48,24 @@ SELECT e.id,
        o.name                      AS organizer
 FROM public.event e
 JOIN public.organizer o ON o.id = e.organizer_id
-WHERE e.status IN ('published', 'cancelled');
+WHERE e.status IN ('published', 'cancelled')
+  AND e.hidden_at IS NULL;                     -- masquée par la modération : retirée de l'app
 
 -- Les fonctions appelées dans une vue sont vérifiées avec les droits de l'APPELANT.
 -- Le REVOKE plus haut a aussi fermé les fonctions PostGIS (installées dans `public`) :
 -- on rouvre la seule dont api.events a besoin. Elle ne fait que mettre une géométrie en GeoJSON.
 GRANT EXECUTE ON FUNCTION public.st_asgeojson(geometry, integer, integer) TO web_anon;
 
-CREATE VIEW api.event_count    AS SELECT * FROM public.event_count;
-CREATE VIEW api.event_timeline AS SELECT * FROM public.event_timeline;  -- seuil de 20 déjà appliqué
-CREATE VIEW api.event_density  AS SELECT * FROM public.event_density;   -- seuil de 20 déjà appliqué
+-- Chiffres des manifs visibles seulement (une manif masquée disparaît aussi des compteurs)
+CREATE VIEW api.event_count AS
+SELECT c.* FROM public.event_count c
+WHERE c.event_id IN (SELECT id FROM public.event WHERE hidden_at IS NULL);
+CREATE VIEW api.event_timeline AS                  -- seuil de 20 déjà appliqué
+SELECT t.* FROM public.event_timeline t
+WHERE t.event_id IN (SELECT id FROM public.event WHERE hidden_at IS NULL);
+CREATE VIEW api.event_density AS                   -- seuil de 20 déjà appliqué
+SELECT d.* FROM public.event_density d
+WHERE d.event_id IN (SELECT id FROM public.event WHERE hidden_at IS NULL);
 
 GRANT SELECT ON api.events, api.event_count, api.event_timeline, api.event_density TO web_anon;
 

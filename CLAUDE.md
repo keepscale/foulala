@@ -41,13 +41,14 @@ GET /event_count, /event_timeline,        PostgreSQL 16 + PostGIS + pg_cron
 - Le rôle anonyme `web_anon` ne voit que le schéma `api`. Les tables de `public` ne sont jamais exposées.
 - Rôle `organizer` (`db/organizer.sql`) : `api.login` vérifie le mot de passe (bcrypt, `pgcrypto`) et signe un JWT HS256 en SQL avec le secret de `private.jwt_secret` (même valeur que `PGRST_JWT_SECRET`). PostgREST bascule alors sur `organizer`, et chaque fonction vérifie que la manif appartient au `sub` du jeton. Comptes **sur invitation** uniquement (`public.create_organizer`, jamais exposé).
 - Une manif publiée ne se modifie plus (parcours et horaires fondent le comptage) : elle s'annule. Seul un brouillon se modifie ou se supprime.
+- Rôle `foulala_admin` (`db/admin.sql`) : pilotage, modération (masquer une manif, suspendre un collectif), invitations. Connexion par mot de passe **et** code TOTP (calculé en SQL, un code ne sert qu'une fois), jeton d'une heure. Comptes créés en ligne de commande seulement (`public.create_admin`). Chaque action va au journal `private.admin_log` avec son motif. **L'administration ne voit jamais un jeton ni une présence isolée** : comptes, manifs et totaux seulement.
 
 ### Modèle de données (`db/schema.sql`)
 
 | Table | Contenu |
 |---|---|
-| `organizer` | Seuls comptes de l'app (nom du collectif, e-mail en minuscules, hash bcrypt) |
-| `event` | Manif : titre, `cause` (type `event_cause`, mêmes identifiants que `design/tokens.json`, défaut `autre`), revendications (`text[]`), ville, `route` (LineString 4326), `buffer_m` (20 à 500, défaut 100), `zone` et `segment_count` calculés par trigger, horaires, `declared`, `status` (draft, published, cancelled), `purged_at` |
+| `organizer` | Comptes des collectifs (nom, e-mail en minuscules, hash bcrypt), `suspended_at` et motif si suspendu par l'administration |
+| `event` | Manif : titre, `cause` (type `event_cause`, mêmes identifiants que `design/tokens.json`, défaut `autre`), revendications (`text[]`), ville, `route` (LineString 4326), `buffer_m` (20 à 500, défaut 100), `zone` et `segment_count` calculés par trigger, horaires, `declared`, `status` (draft, published, cancelled), `purged_at`, `hidden_at` et `hidden_reason` (masquée par la modération : retirée de l'app, plus de présence ni de soutien) |
 | `presence` | `(event_id, token)` en clé primaire, `time_slot` (multiple de 15 min), `segment`. Volontairement **sans** `created_at` |
 | `support` | `(event_id, token)`, sans GPS ni heure |
 | `event_tally` | Totaux conservés après purge |
@@ -69,11 +70,11 @@ Les trois états de l'écran : présence envoyée, en attente de réseau, hors d
 ## Organisation du dépôt (monorepo)
 
 ```
-db/        schema.sql, api.sql, organizer.sql, tests/*.sql → la source de vérité ; seed.sql (données de dev)
+db/        schema.sql, api.sql, organizer.sql, admin.sql, tests/*.sql → la source de vérité ; seed.sql (données de dev)
 server/    docker-compose (PostGIS+pg_cron, PostgREST, Caddy), docker-compose.dev.yml, Caddyfile, initdb/
 supabase/  adapter.sql (droits Supabase), README : base de TEST seulement (journal d'IP)
 app/       app Flutter participants (MVVM officiel de Flutter, voir app/README.md)
-web/       page organisateur : Vite + TypeScript sans framework, Leaflet, publiée sur GitHub Pages (voir web/README.md)
+web/       page organisateur et administration (#/admin) : Vite + TypeScript sans framework, Leaflet, publiée sur GitHub Pages (voir web/README.md)
 design/    tokens.json (couleurs par cause, typo), lien vers les maquettes
 docs/      méthode de comptage, vie privée, décisions
 scripts/   db-test.sh
@@ -157,7 +158,8 @@ Gratuit pour les participants, toujours. Dons (Liberapay, Open Collective), subv
 2. ✅ Rôle organisateur (JWT) : connexion, création, modification d'un brouillon, publication, annulation
 3. ✅ App Flutter : liste par ville, détail, « J'y suis ! » (vérification locale, file d'attente hors ligne), « Je soutiens », compteur
 4. ✅ Page web organisateur : formulaire et tracé du parcours sur une carte OpenStreetMap (à publier : dépôt public + variable `API_URL`)
-5. Limite de débit en mémoire (en priorité sur `/rpc/login`), attestation d'appareil (Play Integrity, App Attest)
+   ✅ Administration : pilotage, santé, modération, comptes des collectifs, journal (TOTP)
+5. Limite de débit en mémoire (en priorité sur `/rpc/login` et `/rpc/admin_login`), attestation d'appareil (Play Integrity, App Attest)
 6. Fausse marche de test avec des amis
 7. Avant toute vraie manif : politique de confidentialité, analyse d'impact (AIPD), méthode de comptage publiée
 

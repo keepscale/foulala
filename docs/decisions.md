@@ -50,5 +50,15 @@ Pas d'inscription libre : n'importe qui pourrait publier de fausses manifs. Les 
 ## 2026-10 · Une manif publiée ne se modifie plus
 Le parcours, la zone et les horaires déterminent qui peut être compté. Les changer après publication fausserait le chiffre. Une manif publiée peut seulement être annulée ; elle reste alors visible, marquée « annulée ».
 
+## 2026-10 · Administration : rôle à part, double authentification, journal
+Un rôle `foulala_admin` distinct des organisateurs, dans la même page web (`#/admin`) pour ne pas maintenir deux sites. C'est le compte le plus sensible : mot de passe de 16 caractères au moins **et** code TOTP (RFC 6238), calculé en SQL avec `pgcrypto` comme le reste de l'authentification ; un code ne sert qu'une fois, le jeton dure une heure. Les comptes admin ne se créent qu'en ligne de commande. Toutes les lectures passent par des fonctions qui revérifient le compte : un admin désactivé perd ses droits immédiatement, même avec un jeton valide.
+
+Chaque action (masquage, suspension, invitation, nouveau mot de passe) est inscrite au journal avec son auteur et son motif, pour pouvoir répondre à un collectif qui conteste. Le journal ne contient que des comptes et des manifs.
+
+L'administration ne lit jamais un jeton, une présence ou un soutien isolé : les statistiques additionnent des totaux déjà publics manif par manif, et la santé du système donne un nombre de jetons en base, pas les jetons.
+
+## 2026-10 · Modérer en masquant, pas en supprimant
+Une manif masquée disparaît de l'app et refuse les nouveaux « J'y suis ! » et soutiens, mais reste en base, purgée normalement, et peut être rétablie. Le collectif voit le motif dans son espace. Suspendre un collectif bloque sa connexion (même avec un jeton en cours) sans toucher à ses manifs : masquer est une décision séparée.
+
 ## 2026-10 · Page organisateur : Vite + TypeScript sans framework, sur GitHub Pages
 Trois écrans (connexion, liste, formulaire avec carte) ne justifient pas un framework : moins de dépendances, code plus facile à auditer. Leaflet pour tracer le parcours. Site statique publié sur GitHub Pages, qui appelle PostgREST directement ; CORS limité à l'adresse de la page. Les participants ne passent jamais par cette page, donc GitHub ne voit que les organisateurs.
