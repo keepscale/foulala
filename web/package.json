@@ -1,0 +1,21 @@
+{
+  "name": "foulala-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Foulala : page organisateur (site statique, GitHub Pages)",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "leaflet": "1.9.4"
+  },
+  "devDependencies": {
+    "@types/leaflet": "1.9.20",
+    "typescript": "5.9.3",
+    "vite": "7.3.6"
+  }
+}

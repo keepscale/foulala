@@ -40,3 +40,15 @@ Le détail et l'écran de présence dessinent le parcours, la zone et la positio
 
 ## 2026-10 · Polices embarquées dans l'app
 Bricolage Grotesque, Figtree et IBM Plex Mono sont livrées avec l'app, sans le paquet `google_fonts` : il les téléchargerait depuis les serveurs de Google, qui verraient passer l'adresse IP de chaque utilisateur.
+
+## 2026-10 · Connexion des organisateurs en SQL, sans code serveur
+`api.login` vérifie le mot de passe et signe le JWT dans PostgreSQL (`pgcrypto`). PostgREST vérifie la signature et bascule sur le rôle `organizer`. Le secret est dans une table du schéma `private`, lisible par son seul propriétaire, plutôt que dans un paramètre de base lisible par toute session. Mots de passe en bcrypt (coût 12) plutôt qu'en argon2id : `pgcrypto` ne connaît pas argon2, et bcrypt reste solide. Un hash factice est calculé quand l'e-mail est inconnu, pour ne pas révéler par le temps de réponse quels comptes existent.
+
+## 2026-10 · Comptes organisateurs sur invitation
+Pas d'inscription libre : n'importe qui pourrait publier de fausses manifs. Les comptes sont créés par un administrateur avec `public.create_organizer()`. On ouvrira plus tard, avec une vérification des collectifs.
+
+## 2026-10 · Une manif publiée ne se modifie plus
+Le parcours, la zone et les horaires déterminent qui peut être compté. Les changer après publication fausserait le chiffre. Une manif publiée peut seulement être annulée ; elle reste alors visible, marquée « annulée ».
+
+## 2026-10 · Page organisateur : Vite + TypeScript sans framework, sur GitHub Pages
+Trois écrans (connexion, liste, formulaire avec carte) ne justifient pas un framework : moins de dépendances, code plus facile à auditer. Leaflet pour tracer le parcours. Site statique publié sur GitHub Pages, qui appelle PostgREST directement ; CORS limité à l'adresse de la page. Les participants ne passent jamais par cette page, donc GitHub ne voit que les organisateurs.

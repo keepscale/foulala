@@ -1,0 +1,60 @@
+name: Page organisateur
+
+# Construit la page organisateur à chaque changement, et la publie sur GitHub Pages
+# depuis main. Prérequis (une seule fois, dans les réglages du dépôt) :
+#   - Settings › Pages › Source : « GitHub Actions »
+#   - Settings › Secrets and variables › Actions › Variables : API_URL = https://api.foulala.example
+#   - côté serveur, WEB_ORIGIN = l'adresse de la page (ex. https://keepscale.github.io)
+# Tant que API_URL n'est pas définie, la page est construite mais pas publiée.
+
+on:
+  push:
+    branches: [main]
+    paths: ["web/**", "design/**", "app/assets/fonts/**", ".github/workflows/web.yml"]
+  pull_request:
+    paths: ["web/**", "design/**", "app/assets/fonts/**", ".github/workflows/web.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: Vérifie les types et construit
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ vars.API_URL }}
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        with:
+          path: web/dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.API_URL != ''
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

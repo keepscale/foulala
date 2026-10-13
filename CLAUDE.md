@@ -39,13 +39,14 @@ GET /event_count, /event_timeline,        PostgreSQL 16 + PostGIS + pg_cron
 
 - **Pas de code serveur applicatif** : PostgREST expose directement les vues et fonctions du schéma `api`. La logique métier et les validations vivent en SQL (`db/`).
 - Le rôle anonyme `web_anon` ne voit que le schéma `api`. Les tables de `public` ne sont jamais exposées.
-- Rôle `organizer` authentifié par JWT : **à faire**.
+- Rôle `organizer` (`db/organizer.sql`) : `api.login` vérifie le mot de passe (bcrypt, `pgcrypto`) et signe un JWT HS256 en SQL avec le secret de `private.jwt_secret` (même valeur que `PGRST_JWT_SECRET`). PostgREST bascule alors sur `organizer`, et chaque fonction vérifie que la manif appartient au `sub` du jeton. Comptes **sur invitation** uniquement (`public.create_organizer`, jamais exposé).
+- Une manif publiée ne se modifie plus (parcours et horaires fondent le comptage) : elle s'annule. Seul un brouillon se modifie ou se supprime.
 
 ### Modèle de données (`db/schema.sql`)
 
 | Table | Contenu |
 |---|---|
-| `organizer` | Seuls comptes de l'app (nom du collectif, e-mail, hash argon2id) |
+| `organizer` | Seuls comptes de l'app (nom du collectif, e-mail en minuscules, hash bcrypt) |
 | `event` | Manif : titre, `cause` (type `event_cause`, mêmes identifiants que `design/tokens.json`, défaut `autre`), revendications (`text[]`), ville, `route` (LineString 4326), `buffer_m` (20 à 500, défaut 100), `zone` et `segment_count` calculés par trigger, horaires, `declared`, `status` (draft, published, cancelled), `purged_at` |
 | `presence` | `(event_id, token)` en clé primaire, `time_slot` (multiple de 15 min), `segment`. Volontairement **sans** `created_at` |
 | `support` | `(event_id, token)`, sans GPS ni heure |
@@ -68,11 +69,11 @@ Les trois états de l'écran : présence envoyée, en attente de réseau, hors d
 ## Organisation du dépôt (monorepo)
 
 ```
-db/        schema.sql, api.sql, tests/*.sql   → la source de vérité ; seed.sql (données de dev)
+db/        schema.sql, api.sql, organizer.sql, tests/*.sql → la source de vérité ; seed.sql (données de dev)
 server/    docker-compose (PostGIS+pg_cron, PostgREST, Caddy), docker-compose.dev.yml, Caddyfile, initdb/
 supabase/  adapter.sql (droits Supabase), README : base de TEST seulement (journal d'IP)
 app/       app Flutter participants (MVVM officiel de Flutter, voir app/README.md)
-web/       page web organisateur (à initialiser)
+web/       page organisateur : Vite + TypeScript sans framework, Leaflet, publiée sur GitHub Pages (voir web/README.md)
 design/    tokens.json (couleurs par cause, typo), lien vers les maquettes
 docs/      méthode de comptage, vie privée, décisions
 scripts/   db-test.sh
@@ -96,6 +97,10 @@ cd server && docker compose -f docker-compose.yml -f docker-compose.dev.yml up -
 cd app && flutter test && flutter analyze
 cd app && dart run tool/gen_tokens.dart
 
+# Page organisateur (compte de dev : lyon@example.org / foulala-dev-2026)
+cd web && npm install && npm run dev      # http://localhost:5173
+cd web && npm run build                   # vérifie les types et construit dist/
+
 # Supabase (tests) : script unique à coller dans le SQL Editor → supabase/build/setup.sql
 ./scripts/supabase-bundle.sh
 
@@ -107,7 +112,9 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T -e PGUSER
 
 Sous Windows, `.gitattributes` force les fins de ligne LF pour `*.sh`, `*.sql` et le Caddyfile : en CRLF, l'initialisation de la base échoue.
 
-La CI (`.github/workflows/db.yml`) lance les tests SQL à chaque push qui touche `db/` ou `server/`.
+La CI lance les tests SQL (`db.yml`) quand `db/` ou `server/` change, et construit la page organisateur (`web.yml`) quand `web/` ou `design/` change ; sur `main`, `web.yml` la publie sur GitHub Pages si la variable `API_URL` est définie.
+
+Variables du serveur (`server/.env`) : `JWT_SECRET` (32 caractères au moins, signe les jetons organisateurs) et `WEB_ORIGIN` (adresse de la page organisateur, seule origine autorisée par CORS).
 
 ## Conventions
 
@@ -147,10 +154,10 @@ Gratuit pour les participants, toujours. Dons (Liberapay, Open Collective), subv
 ## Feuille de route
 
 1. ✅ Schéma SQL, API PostgREST, tests, docker-compose
-2. Rôle organisateur (JWT) : création, publication, annulation
+2. ✅ Rôle organisateur (JWT) : connexion, création, modification d'un brouillon, publication, annulation
 3. ✅ App Flutter : liste par ville, détail, « J'y suis ! » (vérification locale, file d'attente hors ligne), « Je soutiens », compteur
-4. Page web organisateur : formulaire et tracé du parcours sur une carte OpenStreetMap
-5. Limite de débit en mémoire, attestation d'appareil (Play Integrity, App Attest)
+4. ✅ Page web organisateur : formulaire et tracé du parcours sur une carte OpenStreetMap (à publier : dépôt public + variable `API_URL`)
+5. Limite de débit en mémoire (en priorité sur `/rpc/login`), attestation d'appareil (Play Integrity, App Attest)
 6. Fausse marche de test avec des amis
 7. Avant toute vraie manif : politique de confidentialité, analyse d'impact (AIPD), méthode de comptage publiée
 
