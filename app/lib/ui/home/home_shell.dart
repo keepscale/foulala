@@ -9,6 +9,7 @@ import '../events/view_models/events_view_model.dart';
 import '../events/widgets/events_screen.dart';
 import '../privacy/privacy_screen.dart';
 import '../supports/supports_screen.dart';
+import '../supports/view_models/supports_view_model.dart';
 
 /// Écran principal : trois onglets, barre de navigation en bas (maquette Main).
 class HomeShell extends StatefulWidget {
@@ -21,6 +22,7 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _tab = 0;
   late final EventsViewModel _events = EventsViewModel(events: context.read(), cities: context.read())..load();
+  late final SupportsViewModel _supports = SupportsViewModel(supports: context.read())..load();
   late final AppLifecycleListener _lifecycle;
 
   @override
@@ -35,10 +37,17 @@ class _HomeShellState extends State<HomeShell> {
     context.read<PresenceRepository>().flushPending(now: DateTime.now()).catchError((Object _) {});
   }
 
+  void _select(int tab) {
+    // Un soutien a pu être ajouté depuis le détail d'une manif.
+    if (tab == 1) _supports.load();
+    setState(() => _tab = tab);
+  }
+
   @override
   void dispose() {
     _lifecycle.dispose();
     _events.dispose();
+    _supports.dispose();
     super.dispose();
   }
 
@@ -51,12 +60,12 @@ class _HomeShellState extends State<HomeShell> {
           index: _tab,
           children: [
             EventsScreen(viewModel: _events),
-            const SupportsScreen(),
+            SupportsScreen(viewModel: _supports),
             const PrivacyScreen(),
           ],
         ),
       ),
-      bottomNavigationBar: _NavBar(selected: _tab, onSelected: (i) => setState(() => _tab = i)),
+      bottomNavigationBar: _NavBar(selected: _tab, onSelected: _select),
     );
   }
 }

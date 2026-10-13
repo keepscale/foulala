@@ -7,7 +7,8 @@ import 'package:http/http.dart' as http;
 /// Accès brut à l'API PostgREST (schéma `api`).
 ///
 /// Vie privée : aucune requête ne porte d'identifiant d'appareil, de position ni d'en-tête
-/// permettant de reconnaître l'utilisateur. Seul `POST /rpc/presence` envoie un jeton.
+/// permettant de reconnaître l'utilisateur. Seuls `POST /rpc/presence` et `POST /rpc/support`
+/// envoient un jeton. Aucune lecture ne porte la liste des manifs soutenues.
 class FoulalaApi {
   FoulalaApi(Uri baseUrl, {http.Client? client, String apiKey = ''})
       // « …/rest/v1/ » et « …/rest/v1 » : même adresse, sans double barre oblique.
@@ -58,9 +59,22 @@ class FoulalaApi {
     return _getRows('event_count', {'event_id': 'in.(${eventIds.join(',')})'});
   }
 
+  /// Arrivées par quart d'heure d'une manif.
+  Future<List<Map<String, dynamic>>> getTimeline(String eventId) =>
+      _getRows('event_timeline', {'event_id': 'eq.$eventId', 'order': 'time_slot'});
+
+  /// Présences par tronçon et par quart d'heure (cases de 20 personnes ou plus seulement).
+  Future<List<Map<String, dynamic>>> getDensity(String eventId) =>
+      _getRows('event_density', {'event_id': 'eq.$eventId', 'order': 'time_slot,segment'});
+
   /// `POST /rpc/presence`. Renvoie true si le jeton est nouveau, false s'il était déjà compté.
-  Future<bool> postPresence(Map<String, Object?> body) async =>
-      jsonDecode(await _send(() => _client.post(_uri('rpc/presence'),
+  Future<bool> postPresence(Map<String, Object?> body) => _rpc('presence', body);
+
+  /// `POST /rpc/support`. Renvoie true si le jeton est nouveau, false s'il était déjà compté.
+  Future<bool> postSupport(Map<String, Object?> body) => _rpc('support', body);
+
+  Future<bool> _rpc(String name, Map<String, Object?> body) async =>
+      jsonDecode(await _send(() => _client.post(_uri('rpc/$name'),
           headers: {..._commonHeaders, 'Content-Type': 'application/json', 'Accept': 'application/json'},
           body: jsonEncode(body)))) as bool;
 

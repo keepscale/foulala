@@ -45,4 +45,16 @@ class MemoryStore implements LocalStore {
 
   @override
   Future<void> setPending(List<String> entries) async => values['pending'] = List.of(entries);
+
+  @override
+  Future<String?> getSupportToken(String eventId) async => values['support_token.$eventId'] as String?;
+
+  @override
+  Future<void> setSupportToken(String eventId, String token) async => values['support_token.$eventId'] = token;
+
+  @override
+  Future<List<String>> getSupports() async => (values['supports'] as List<String>?) ?? const [];
+
+  @override
+  Future<void> setSupports(List<String> entries) async => values['supports'] = List.of(entries);
 }

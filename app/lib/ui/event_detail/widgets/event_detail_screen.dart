@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../domain/models/event.dart';
+import '../../../domain/repositories/support_repository.dart';
+import '../../counter/counter_route.dart';
 import '../../core/format.dart';
 import '../../core/themes/theme.dart';
 import '../../core/themes/tokens.g.dart';
@@ -14,7 +16,12 @@ import '../view_models/event_detail_view_model.dart';
 /// Ouvre le détail d'une manif. Le ViewModel vit le temps de l'écran.
 Route<void> eventDetailRoute(String eventId) => MaterialPageRoute(
       builder: (context) => ChangeNotifierProvider(
-        create: (context) => EventDetailViewModel(eventId: eventId, events: context.read(), presence: context.read())
+        create: (context) => EventDetailViewModel(
+          eventId: eventId,
+          events: context.read(),
+          presence: context.read(),
+          supports: context.read(),
+        )
           ..load(),
         child: Consumer<EventDetailViewModel>(builder: (_, vm, _) => EventDetailScreen(viewModel: vm)),
       ),
@@ -116,6 +123,10 @@ class EventDetailScreen extends StatelessWidget {
                             ),
                           ),
                         ]),
+                        if (viewModel.hasCounter) ...[
+                          const SizedBox(height: 8),
+                          _CounterLink(event: event, live: event.isLive(now)),
+                        ],
                         if (event.description != null) ...[
                           const SizedBox(height: 13),
                           Text(event.description!, style: FoulalaText.body(16, height: 1.4)),
@@ -347,8 +358,14 @@ class _ActionBar extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-        SizedBox(
-          width: double.infinity,
+        Row(children: [
+          if (viewModel.canSupport) ...[
+            Expanded(flex: 10, child: _SupportButton(viewModel: viewModel, t: t)),
+            const SizedBox(width: 10),
+          ],
+          Expanded(
+            flex: 13,
+            child: SizedBox(
           height: 56,
           child: FilledButton(
             onPressed: enabled
@@ -372,7 +389,9 @@ class _ActionBar extends StatelessWidget {
               if (subtitle != null) Text(subtitle, style: FoulalaText.body(12, weight: 600, color: const Color(0xFF4D4A63))),
             ]),
           ),
-        ),
+            ),
+          ),
+        ]),
         const SizedBox(height: 10),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           const FoulalaIcon(FoulalaIcons.lock, size: 15, color: FoulalaColors.textMuted),
@@ -385,6 +404,113 @@ class _ActionBar extends StatelessWidget {
           ),
         ]),
       ]),
+    );
+  }
+}
+
+/// Ouvre le compteur détaillé (maquette Compteur).
+class _CounterLink extends StatelessWidget {
+  const _CounterLink({required this.event, required this.live});
+
+  final Event event;
+  final bool live;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = event.cause.theme;
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => Navigator.of(context).push(counterRoute(event)),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            child: Row(children: [
+              if (live) ...[
+                Container(width: 8, height: 8, decoration: BoxDecoration(color: t.primary, shape: BoxShape.circle)),
+                const SizedBox(width: 8),
+              ],
+              Expanded(
+                child: Text(
+                  live ? 'Compteur en direct' : 'Voir le compteur',
+                  style: FoulalaText.body(15, weight: 800, color: t.deep),
+                ),
+              ),
+              Text('arrivées, tronçons', style: FoulalaText.body(13, color: FoulalaColors.textMuted)),
+              const SizedBox(width: 6),
+              FoulalaIcon(FoulalaIcons.arrowRight, size: 18, color: t.deep),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// « Je soutiens » : sans GPS, à tout moment avant l'annulation. Un soutien ne se retire pas :
+/// il est anonyme, le serveur ne sait pas de quel téléphone il vient.
+class _SupportButton extends StatelessWidget {
+  const _SupportButton({required this.viewModel, required this.t});
+
+  final EventDetailViewModel viewModel;
+  final CauseTheme t;
+
+  Future<void> _onPressed(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    if (viewModel.supported) {
+      messenger.showSnackBar(const SnackBar(
+        content: Text('Votre soutien est compté. Il est anonyme : il ne peut pas être retiré.'),
+      ));
+      return;
+    }
+    final outcome = await viewModel.support();
+    final message = switch (outcome) {
+      SupportOutcome.sent => 'Merci ! Votre soutien est compté. La manif rejoint « Mes soutiens ».',
+      SupportOutcome.offline => 'Pas de réseau : réessayez dans un moment.',
+      SupportOutcome.rejected => "Cette manif n'accepte plus de soutiens.",
+      null => null,
+    };
+    if (message != null) messenger.showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final supported = viewModel.supported;
+    final color = supported ? Colors.white : t.deep;
+    return Semantics(
+      toggled: supported,
+      child: SizedBox(
+        height: 56,
+        child: FilledButton(
+          onPressed: viewModel.supporting ? null : () => _onPressed(context),
+          style: FilledButton.styleFrom(
+            backgroundColor: supported ? t.deep : t.soft,
+            foregroundColor: color,
+            disabledBackgroundColor: t.soft,
+            disabledForegroundColor: t.deep,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(FoulalaRadius.button)),
+          ),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            if (viewModel.supporting)
+              SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2.4, color: t.deep))
+            else
+              FoulalaIcon(FoulalaIcons.heart, size: 20, color: color, strokeWidth: 2.4, filled: supported),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                supported ? 'Soutenu' : 'Je soutiens',
+                style: FoulalaText.body(17, weight: 800, color: color),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ]),
+        ),
+      ),
     );
   }
 }

@@ -54,6 +54,12 @@ class PrivacyScreen extends StatelessWidget {
               ),
             ]),
           ),
+        const SizedBox(height: 4),
+        Text(
+          "Pour « Je soutiens » : seulement l'identifiant de la manif et un autre jeton, "
+          "sans heure ni position. La liste de vos soutiens reste sur votre téléphone.",
+          style: FoulalaText.body(15, height: 1.4, color: FoulalaColors.textMuted),
+        ),
         const SizedBox(height: 20),
         Text("Ce qu'il ne reçoit jamais", style: FoulalaText.display(22)),
         const SizedBox(height: 8),

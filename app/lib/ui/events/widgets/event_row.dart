@@ -8,11 +8,14 @@ import '../../core/ui/foulala_icon.dart';
 
 /// Ligne d'une manif à venir ou terminée (maquette Main, « À venir »).
 class EventRow extends StatelessWidget {
-  const EventRow({super.key, required this.summary, required this.now, this.onTap});
+  const EventRow({super.key, required this.summary, required this.now, this.onTap, this.showCount = true});
 
   final EventSummary summary;
   final DateTime now;
   final VoidCallback? onTap;
+
+  /// Sans compteur (« Mes soutiens » : la liste n'est jamais envoyée au serveur pour lire les chiffres).
+  final bool showCount;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +32,7 @@ class EventRow extends StatelessWidget {
 
     return Semantics(
       button: onTap != null,
-      label: '${event.title}, ${t.label}${event.isCancelled ? ', annulée' : ''}. $when. $figure.',
+      label: '${event.title}, ${t.label}${event.isCancelled ? ', annulée' : ''}. $when.${showCount ? ' $figure.' : ''}',
       excludeSemantics: true,
       child: Material(
         color: FoulalaColors.surface,
@@ -72,7 +75,7 @@ class EventRow extends StatelessWidget {
                           _Tag(label: t.label, background: t.soft, color: t.deep),
                           if (event.isCancelled)
                             const _Tag(label: 'Annulée', background: FoulalaColors.text, color: FoulalaColors.surface)
-                          else
+                          else if (showCount)
                             Text(figure, style: FoulalaText.body(13, color: FoulalaColors.textMuted)),
                         ],
                       ),

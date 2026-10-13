@@ -148,7 +148,7 @@ Gratuit pour les participants, toujours. Dons (Liberapay, Open Collective), subv
 
 1. ✅ Schéma SQL, API PostgREST, tests, docker-compose
 2. Rôle organisateur (JWT) : création, publication, annulation
-3. App Flutter : liste par ville, détail, « J'y suis ! » (vérification locale, file d'attente hors ligne), compteur
+3. ✅ App Flutter : liste par ville, détail, « J'y suis ! » (vérification locale, file d'attente hors ligne), « Je soutiens », compteur
 4. Page web organisateur : formulaire et tracé du parcours sur une carte OpenStreetMap
 5. Limite de débit en mémoire, attestation d'appareil (Play Integrity, App Attest)
 6. Fausse marche de test avec des amis

@@ -23,11 +23,11 @@ Architecture officielle de Flutter (MVVM), voir `docs/decisions.md` :
 ```
 lib/
   config.dart                 adresse de l'API (--dart-define=API_URL)
-  domain/models/              Event, EventCount, Cause : Dart pur, sans Flutter ni JSON
-  domain/repositories/        interfaces : EventRepository, CityRepository
+  domain/models/              Event, EventCount, EventStats, Cause : Dart pur, sans Flutter ni JSON
+  domain/repositories/        interfaces : EventRepository, CityRepository, PresenceRepository, SupportRepository
   data/services/              FoulalaApi (HTTP), LocalStore (stockage local)
   data/mappers/               JSON de l'API → modèles du domaine
-  data/repositories/          implémentations : EventRepositoryRemote, CityRepositoryLocal
+  data/repositories/          implémentations : EventRepositoryRemote, CityRepositoryLocal, …Remote
   ui/core/themes/             thème, tokens.g.dart (généré)
   ui/core/ui/                 icônes, logo, décors par cause
   ui/<écran>/view_models/     un ChangeNotifier par écran
@@ -55,7 +55,7 @@ La logique sensible vit dans `domain/`, sous forme d'objets valeur qui portent l
 
 - `flutter_map`, `latlong2` : carte OpenStreetMap
 - `geolocator` : lecture **ponctuelle** de la position (jamais en continu, jamais en arrière-plan)
-- `shared_preferences` : ville choisie, jetons par manif et file d'envoi hors ligne
+- `shared_preferences` : ville choisie, jetons par manif (présence et soutien), file d'envoi hors ligne, liste « Mes soutiens »
 
 Les jetons UUID v4 sont tirés par `PresenceToken.generate()` avec `Random.secure()` de Dart, sans paquet : une dépendance de moins sur le code le plus sensible.
 - `provider`, `http`, `flutter_svg` : injection, appels à l'API, icônes des maquettes
@@ -68,7 +68,7 @@ Aucun SDK d'analytics, de publicité ou de crash reporting qui envoie des donné
 
 Relevés lors de l'ajout des paquets. Ils sont à régler avant la première vraie manif.
 
-- [ ] **Sauvegarde iCloud.** Sur iOS, `shared_preferences` (NSUserDefaults) part dans la sauvegarde iCloud : les jetons par manif et la file d'envoi y sont maintenant stockés. Les ranger dans un fichier exclu de la sauvegarde (`isExcludedFromBackup`) ou dans le trousseau avec `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`. **Bloquant avant toute diffusion iOS.**
+- [ ] **Sauvegarde iCloud.** Sur iOS, `shared_preferences` (NSUserDefaults) part dans la sauvegarde iCloud : les jetons par manif, la file d'envoi et la liste des manifs soutenues y sont maintenant stockés. Les ranger dans un fichier exclu de la sauvegarde (`isExcludedFromBackup`) ou dans le trousseau avec `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`. **Bloquant avant toute diffusion iOS.**
 - [ ] **Tuiles de carte**, si on ajoute un vrai fond de carte. Pour l'instant le parcours est un schéma dessiné sur le téléphone (`RouteSketch`), sans aucune tuile. Avec `flutter_map`, `tile.openstreetmap.org` verrait l'adresse IP et la zone affichée, donc quelle manif on consulte : servir les tuiles derrière notre Caddy sans journal, ou choisir un fournisseur qui ne journalise pas. `flutter_map` envoie aussi un `User-Agent` qui contient le nom du paquet de l'app.
 - [x] **Position sur Android.** `GeolocatorLocationReader` appelle `getCurrentPosition` avec `AndroidSettings(forceLocationManager: true)` : GPS seul, sans le service de localisation de Google Play. La bibliothèque Play Services reste incluse dans l'app.
 
@@ -77,9 +77,21 @@ Déjà fait : la sauvegarde automatique Android est coupée (`allowBackup="false
 ## Écrans (voir les maquettes)
 
 1. ✅ Liste des manifs par ville, avec filtres par cause
-2. ✅ Détail : schéma du parcours et de la zone, revendications, bouton « J'y suis ! » (« Je soutiens » à faire)
+2. ✅ Détail : schéma du parcours et de la zone, revendications, boutons « Je soutiens » et « J'y suis ! »
 3. ✅ « J'y suis ! » : envoyée, en attente de réseau, hors de la zone, position imprécise ou refusée
-4. Compteur en direct : total, arrivées par quart d'heure, densité par tronçon
+4. ✅ Compteur : total, arrivées par quart d'heure, densité par tronçon. En direct, relu chaque minute
+5. ✅ Mes soutiens : liste gardée sur le téléphone
+
+### « Je soutiens »
+
+- Jeton à part, différent de celui du « J'y suis ! » pour la même manif : le serveur ne peut pas relier un soutien à une présence. Il est gardé avant l'envoi, pour qu'un nouvel essai ne compte pas deux fois.
+- Seuls `event_id` et `token` partent. Sans réseau, rien n'est mis en file : l'utilisateur réessaie.
+- Un soutien ne se retire pas : il est anonyme.
+- « Mes soutiens » affiche une copie locale de chaque manif, sans chiffres : lire les compteurs demanderait d'envoyer au serveur la liste des manifs soutenues.
+
+### Compteur
+
+- Toute barre d'arrivées sous 20 est hachurée, comme les cases de densité. La vue `event_density` applique déjà le seuil côté serveur, et l'app le réapplique. `event_timeline` ne l'applique pas encore : à corriger côté SQL.
 
 Pour tester « J'y suis ! » sur l'émulateur : `adb emu geo fix 4.8320 45.7578` (Bellecour, sur le parcours de la marche en cours de `db/seed.sql`), ou le menu **⋯ › Location** de l'émulateur.
 

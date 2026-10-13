@@ -1,4 +1,5 @@
 import '../../domain/models/event.dart';
+import '../../domain/models/event_stats.dart';
 import '../../domain/repositories/event_repository.dart';
 import '../mappers/event_mapper.dart';
 import '../services/foulala_api.dart';
@@ -24,6 +25,17 @@ class EventRepositoryRemote implements EventRepository {
     final event = EventMapper.event(await _api.getEvent(id));
     final counts = await _counts([id]);
     return EventSummary(event, counts[id] ?? EventCount.zero);
+  }
+
+  @override
+  Future<EventStats> getEventStats(String id) async {
+    final (counts, timeline, density) =
+        await (_counts([id]), _api.getTimeline(id), _api.getDensity(id)).wait;
+    return EventStats(
+      count: counts[id] ?? EventCount.zero,
+      arrivals: timeline.map(EventMapper.arrivals).toList(),
+      density: density.map(EventMapper.density).toList(),
+    );
   }
 
   Future<Map<String, EventCount>> _counts(Iterable<String> ids) async => {

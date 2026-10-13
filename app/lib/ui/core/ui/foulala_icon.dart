@@ -40,16 +40,26 @@ enum FoulalaIcons {
 }
 
 class FoulalaIcon extends StatelessWidget {
-  const FoulalaIcon(this.icon, {super.key, this.size = 22, this.color = FoulalaColors.text, this.strokeWidth = 2.2});
+  const FoulalaIcon(
+    this.icon, {
+    super.key,
+    this.size = 22,
+    this.color = FoulalaColors.text,
+    this.strokeWidth = 2.2,
+    this.filled = false,
+  });
 
   final FoulalaIcons icon;
   final double size;
   final Color color;
   final double strokeWidth;
 
+  /// Forme pleine (cœur « Soutenu »), en plus du trait.
+  final bool filled;
+
   @override
   Widget build(BuildContext context) {
-    final svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" '
+    final svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${filled ? '#000' : 'none'}" stroke="#000" '
         'stroke-width="$strokeWidth" stroke-linecap="round" stroke-linejoin="round">${icon.paths}</svg>';
     return SvgPicture.string(
       svg,
