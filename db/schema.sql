@@ -229,7 +229,8 @@ SELECT e.id AS event_id,
 FROM event e
 WHERE e.status <> 'draft';
 
--- Arrivées par quart d'heure (le cumul donne la montée en puissance)
+-- Arrivées par quart d'heure (le cumul donne la montée en puissance).
+-- Seuil : un quart d'heure de moins de 20 arrivées n'est jamais affiché.
 CREATE VIEW event_timeline AS
 SELECT event_id, time_slot, sum(n) AS arrivals
 FROM (
@@ -237,7 +238,8 @@ FROM (
     UNION ALL
     SELECT event_id, time_slot, n FROM event_tally WHERE kind = 'presence'
 ) x
-GROUP BY event_id, time_slot;
+GROUP BY event_id, time_slot
+HAVING sum(n) >= 20;
 
 -- Densité par tronçon et par quart d'heure.
 -- Seuil : on n'affiche jamais un groupe de moins de 20 personnes.

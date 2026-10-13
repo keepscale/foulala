@@ -56,7 +56,7 @@ WHERE e.status IN ('published', 'cancelled');
 GRANT EXECUTE ON FUNCTION public.st_asgeojson(geometry, integer, integer) TO web_anon;
 
 CREATE VIEW api.event_count    AS SELECT * FROM public.event_count;
-CREATE VIEW api.event_timeline AS SELECT * FROM public.event_timeline;
+CREATE VIEW api.event_timeline AS SELECT * FROM public.event_timeline;  -- seuil de 20 déjà appliqué
 CREATE VIEW api.event_density  AS SELECT * FROM public.event_density;   -- seuil de 20 déjà appliqué
 
 GRANT SELECT ON api.events, api.event_count, api.event_timeline, api.event_density TO web_anon;

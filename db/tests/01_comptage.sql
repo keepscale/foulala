@@ -1,4 +1,4 @@
--- Tests du comptage : enregistrement, validations, seuil de densité, purge.
+-- Tests du comptage : enregistrement, validations, seuils (arrivées, densité), purge.
 -- Lancés dans une transaction annulée à la fin : la base reste propre.
 \set ON_ERROR_STOP on
 BEGIN;
@@ -70,9 +70,16 @@ BEGIN
     ASSERT NOT EXISTS (SELECT 1 FROM event_density WHERE event_id = e AND segment = 3),
            'un tronçon de moins de 20 personnes ne doit jamais apparaître';
 
+    -- Seuil des arrivées : 29 sur le quart d'heure en cours, 5 sur le précédent
+    FOR i IN 1..5 LOOP PERFORM record_presence(e, gen_random_uuid(), slot - interval '15 minutes'); END LOOP;
+    ASSERT (SELECT arrivals FROM event_timeline WHERE event_id = e AND time_slot = slot) = 29,
+           'quart d''heure de 29 arrivées visible';
+    ASSERT NOT EXISTS (SELECT 1 FROM event_timeline WHERE event_id = e AND time_slot = slot - interval '15 minutes'),
+           'un quart d''heure de moins de 20 arrivées ne doit jamais apparaître';
+
     -- Soutiens
     FOR i IN 1..40 LOOP PERFORM record_support(e, gen_random_uuid()); END LOOP;
-    ASSERT (SELECT present FROM event_count WHERE event_id = e) = 29, 'présents avant purge';
+    ASSERT (SELECT present FROM event_count WHERE event_id = e) = 34, 'présents avant purge';
     ASSERT (SELECT supporters FROM event_count WHERE event_id = e) = 40, 'soutiens avant purge';
 
     -- Purge : plus aucun jeton, totaux identiques, nouvelle présence refusée
@@ -80,9 +87,12 @@ BEGIN
     PERFORM purge_event(e);   -- idempotente
     ASSERT NOT EXISTS (SELECT 1 FROM presence WHERE event_id = e), 'jetons de présence supprimés';
     ASSERT NOT EXISTS (SELECT 1 FROM support  WHERE event_id = e), 'jetons de soutien supprimés';
-    ASSERT (SELECT present FROM event_count WHERE event_id = e) = 29, 'présents conservés après purge';
+    ASSERT (SELECT present FROM event_count WHERE event_id = e) = 34, 'présents conservés après purge';
     ASSERT (SELECT supporters FROM event_count WHERE event_id = e) = 40, 'soutiens conservés après purge';
     ASSERT (SELECT n FROM event_density WHERE event_id = e AND segment = 2) = 24, 'densité conservée';
+    ASSERT (SELECT arrivals FROM event_timeline WHERE event_id = e AND time_slot = slot) = 29, 'arrivées conservées';
+    ASSERT NOT EXISTS (SELECT 1 FROM event_timeline WHERE event_id = e AND arrivals < 20),
+           'seuil des arrivées conservé après purge';
 
     BEGIN
         PERFORM record_presence(e, gen_random_uuid(), slot);

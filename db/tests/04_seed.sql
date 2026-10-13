@@ -45,6 +45,7 @@ BEGIN
     ASSERT EXISTS (SELECT 1 FROM api.event_density WHERE event_id = '5eed0000-0000-0000-0000-0000000000e1'),
            'e1 doit avoir des cases de densité affichables';
     ASSERT NOT EXISTS (SELECT 1 FROM api.event_density WHERE n < 20), 'seuil de 20 non respecté';
+    ASSERT NOT EXISTS (SELECT 1 FROM api.event_timeline WHERE arrivals < 20), 'seuil de 20 non respecté (arrivées)';
 
     RAISE NOTICE '04_seed : OK';
 END $$;
