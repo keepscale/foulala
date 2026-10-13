@@ -18,7 +18,7 @@ CREATE TABLE organizer (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     name          text NOT NULL,              -- collectif, syndicat, association…
     email         text NOT NULL UNIQUE,
-    password_hash text NOT NULL,              -- argon2id ; à retirer si l'auth est déléguée (ex. Supabase Auth)
+    password_hash text NOT NULL,              -- bcrypt (pgcrypto), voir db/organizer.sql
     created_at    timestamptz NOT NULL DEFAULT now()
 );
 

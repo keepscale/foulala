@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Recrée une base de test, charge le schéma et l'API, puis lance tous les tests SQL.
+# Recrée une base de test, charge le schéma, l'API et l'espace organisateur, puis lance tous les tests SQL.
 # Usage : PGHOST=localhost PGUSER=postgres PGPASSWORD=postgres ./scripts/db-test.sh
 set -euo pipefail
 
@@ -9,6 +9,7 @@ DB="${TEST_DB:-foulala_test}"
 psql -v ON_ERROR_STOP=1 -q -d postgres -c "DROP DATABASE IF EXISTS ${DB}" -c "CREATE DATABASE ${DB}"
 psql -v ON_ERROR_STOP=1 -q -d "${DB}" -f db/schema.sql
 psql -v ON_ERROR_STOP=1 -q -d "${DB}" -f db/api.sql
+psql -v ON_ERROR_STOP=1 -q -d "${DB}" -f db/organizer.sql
 
 for t in db/tests/*.sql; do
   echo "→ ${t}"

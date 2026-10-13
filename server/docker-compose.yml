@@ -15,6 +15,7 @@ services:
       POSTGRES_USER: foulala
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?à définir dans .env}
       AUTHENTICATOR_PASSWORD: ${AUTHENTICATOR_PASSWORD:?à définir dans .env}
+      JWT_SECRET: ${JWT_SECRET:?à définir dans .env (32 caractères au moins)}
     command:
       - postgres
       - -c
@@ -31,6 +32,7 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ../db/schema.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
       - ../db/api.sql:/docker-entrypoint-initdb.d/20-api.sql:ro
+      - ../db/organizer.sql:/docker-entrypoint-initdb.d/25-organizer.sql:ro
       - ./initdb/30-authenticator.sh:/docker-entrypoint-initdb.d/30-authenticator.sh:ro
       - ./initdb/40-cron.sql:/docker-entrypoint-initdb.d/40-cron.sql:ro
     healthcheck:
@@ -49,6 +51,11 @@ services:
       PGRST_DB_SCHEMAS: api
       PGRST_DB_ANON_ROLE: web_anon
       PGRST_LOG_LEVEL: crit
+      # Jetons des organisateurs, signés par api.login avec le même secret
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      # Seule la page organisateur peut appeler l'API depuis un navigateur
+      # (l'app mobile n'est pas concernée par CORS)
+      PGRST_SERVER_CORS_ALLOWED_ORIGINS: ${WEB_ORIGIN:?à définir dans .env}
       PGRST_OPENAPI_SERVER_PROXY_URI: https://${DOMAIN}
 
   caddy:

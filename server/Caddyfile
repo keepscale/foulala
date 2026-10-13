@@ -11,5 +11,6 @@
 		header_up -X-Real-IP
 	}
 
-	# TODO : limite de débit par IP, en mémoire uniquement (module caddy-ratelimit).
+	# TODO : limite de débit par IP, en mémoire uniquement (module caddy-ratelimit),
+	# en priorité sur /rpc/login (essais de mots de passe).
 }

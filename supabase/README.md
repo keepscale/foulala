@@ -54,3 +54,7 @@ Supabase donne par défaut aux rôles `anon` et `authenticated` **tous les droit
 - vérifie le résultat et s'arrête si quelque chose reste exposé.
 
 Le *Security Advisor* de Supabase signalera PostGIS installé dans `public` : c'est voulu, pour rester identique à `server/`.
+
+## Espace organisateur
+
+`db/organizer.sql` (connexion des organisateurs, création de manifs) n'est **pas** inclus dans le script Supabase : il signe ses propres jetons, alors que Supabase gère les siens. Pour tester la page organisateur, utiliser le serveur de dev local (`server/docker-compose.dev.yml`).

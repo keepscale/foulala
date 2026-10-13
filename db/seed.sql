@@ -17,7 +17,9 @@
 DELETE FROM organizer WHERE id::text LIKE '5eed0000-%';   -- cascade sur event, presence, support, event_tally
 
 INSERT INTO organizer (id, name, email, password_hash) VALUES
-    ('5eed0000-0000-0000-0000-000000000001', 'Collectif test Lyon',  'lyon@example.org',  'seed'),
+    -- Compte de dev pour la page organisateur : lyon@example.org / foulala-dev-2026 (hash bcrypt figé)
+    ('5eed0000-0000-0000-0000-000000000001', 'Collectif test Lyon',  'lyon@example.org',
+     '$2a$12$mxR9wJhkmqQqAPP4xupOMOKWfx4EMigSXI4GfN0wteMJ6hBjgqFZu'),
     ('5eed0000-0000-0000-0000-000000000002', 'Collectif test Paris', 'paris@example.org', 'seed'),
     ('5eed0000-0000-0000-0000-000000000003', 'Collectif test Nancy', 'nancy@example.org', 'seed');
 
