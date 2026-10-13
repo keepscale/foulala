@@ -40,6 +40,8 @@ jobs:
         run: npm run build
         env:
           VITE_API_URL: ${{ vars.API_URL }}
+          # Supabase seulement (tests) : clé publique sb_publishable_…, vide avec le serveur Foulala
+          VITE_API_KEY: ${{ vars.API_KEY }}
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         with:

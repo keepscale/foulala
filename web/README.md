@@ -18,6 +18,8 @@ Compte de dev (créé par `db/seed.sql`) : `lyon@example.org` / `foulala-dev-202
 
 Autre API : copier `.env.example` en `.env.local` et changer `VITE_API_URL`.
 
+Sur la base de test Supabase : `VITE_API_URL=https://VOTRE-PROJET.supabase.co/rest/v1` et `VITE_API_KEY=sb_publishable_…`. La page envoie alors la clé publique et le schéma `api`, et affiche un bandeau « Version de test ». Mise en place : `supabase/README.md`.
+
 ```bash
 npm run typecheck    # vérification des types
 npm run build        # construit dist/ (vérifie aussi les types)

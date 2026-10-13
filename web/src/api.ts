@@ -5,6 +5,13 @@
 export const API_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '')
   ?? 'http://localhost:3000';
 
+// Supabase (tests seulement) : clé publique, la même pour tous les navigateurs.
+// Vide avec le serveur Foulala (server/), qui n'en a pas besoin.
+const API_KEY = (import.meta.env.VITE_API_KEY as string | undefined) ?? '';
+
+/** Base de test Supabase : elle journalise les adresses IP, jamais pour une vraie manif. */
+export const IS_TEST_BACKEND = API_URL.includes('.supabase.co');
+
 export type CauseId = 'climat' | 'fiertes' | 'paix' | 'social' | 'sante' | 'education' | 'autre';
 export type Status = 'draft' | 'published' | 'cancelled';
 
@@ -110,8 +117,16 @@ async function call<T>(path: string, init: RequestInit = {}, who: Who | null = '
   const headers = new Headers(init.headers);
   headers.set('Accept', 'application/json');
   if (init.body) headers.set('Content-Type', 'application/json');
+  if (API_KEY) {
+    // Supabase expose plusieurs schémas : on précise toujours `api`
+    headers.set('apikey', API_KEY);
+    headers.set('Accept-Profile', 'api');
+    if (init.body) headers.set('Content-Profile', 'api');
+  }
   const s = who ? session(who) : null;
   if (s) headers.set('Authorization', `Bearer ${s.token}`);
+  // Ancienne clé « anon » de Supabase (un JWT) : la passerelle l'attend aussi ici
+  else if (API_KEY.startsWith('eyJ')) headers.set('Authorization', `Bearer ${API_KEY}`);
 
   let res: Response;
   try {

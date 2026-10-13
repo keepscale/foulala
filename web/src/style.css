@@ -206,6 +206,12 @@ input[type='checkbox'] { width: 22px; height: 22px; margin: 1px 0 0; accent-colo
 .city-row { display: flex; gap: 8px; align-items: flex-end; }
 .city-row .field { flex: 1 1 auto; }
 
+/* Bandeau de la base de test (Supabase) */
+.test-banner {
+  margin: 0; padding: 8px 16px; text-align: center; font-weight: 700; font-size: 14px;
+  background: repeating-linear-gradient(135deg, #FFC531 0 14px, #FFD666 14px 28px); color: #1D1A33;
+}
+
 /* Modération, visible aussi côté collectif */
 .status-hidden { background: #1D1A33; color: #FFFFFF; }
 .moderation-note { margin: 4px 0 0; padding: 10px 14px; border-radius: 14px; background: #FFF4D6; color: #5C4300; }

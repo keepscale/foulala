@@ -10,7 +10,7 @@
    ./scripts/supabase-bundle.sh
    ```
 
-   Il assemble `db/schema.sql`, `db/api.sql`, la purge horaire, `supabase/adapter.sql` et `db/seed.sql` dans `supabase/build/setup.sql` (ignoré par git).
+   Il assemble `db/schema.sql`, `db/api.sql`, `db/organizer.sql`, `db/admin.sql`, la purge horaire, `supabase/adapter.sql` et `db/seed.sql` dans `supabase/build/setup.sql` (ignoré par git). Il produit aussi `reset.sql` (tout effacer) et `reseed.sql` (recharger les données de test).
 
 2. **Supabase › SQL Editor** : coller tout `supabase/build/setup.sql` dans une base **vide**, puis *Run*. Le script finit par la notice « Supabase : droits vérifiés, seul le schéma api est accessible. ». S'il s'arrête sur une erreur de droits, **ne pas aller plus loin**. Si pg_cron est refusé, l'activer dans *Database › Extensions* et relancer.
 
@@ -55,6 +55,37 @@ Supabase donne par défaut aux rôles `anon` et `authenticated` **tous les droit
 
 Le *Security Advisor* de Supabase signalera PostGIS installé dans `public` : c'est voulu, pour rester identique à `server/`.
 
-## Espace organisateur
+## Page organisateur et administration sur Supabase
 
-`db/organizer.sql` (connexion des organisateurs, création de manifs) et `db/admin.sql` (administration) ne sont **pas** inclus dans le script Supabase : il signe ses propres jetons, alors que Supabase gère les siens. Pour tester la page organisateur, utiliser le serveur de dev local (`server/docker-compose.dev.yml`).
+Pour tester la page web (`foulala.keepscale.fr`) sans serveur à soi. Mêmes réserves : **comptes et manifs fictifs uniquement**, la page affiche d'ailleurs un bandeau « Version de test ».
+
+`setup.sql` contient `db/organizer.sql` et `db/admin.sql`. Leurs fonctions trouvent `pgcrypto` dans le schéma `extensions` de Supabase (le script de bundle l'ajoute à leur `search_path`).
+
+1. **Base déjà installée sans l'espace organisateur** : coller `supabase/build/reset.sql` (efface tout ce que Foulala a créé), puis `supabase/build/setup.sql`. Les données sont fictives, rien à perdre.
+
+2. **Secret de signature des jetons.** Les jetons des organisateurs et de l'administration sont signés en SQL ; l'API de Supabase ne les accepte que s'ils le sont avec le secret du projet. Dans *Project Settings › JWT Keys*, onglet **Legacy JWT Secret**, copier le secret, puis dans le SQL Editor :
+
+   ```sql
+   INSERT INTO private.jwt_secret (secret) VALUES ('le secret copié')
+   ON CONFLICT (id) DO UPDATE SET secret = EXCLUDED.secret;
+   ```
+
+   Si le projet n'a plus de secret « legacy » (seulement des clés ECC), créer une clé de type **HS256 (shared secret)** en attente (*standby*), avec une valeur aléatoire de 32 caractères au moins, et mettre la même valeur ici.
+
+   Sans ce secret, la connexion répond « No suitable key or wrong key type » (PGRST301).
+
+3. **Compte administrateur** (SQL Editor) :
+
+   ```sql
+   SELECT public.create_admin('Prénom', 'moi@example.org', 'une phrase de passe de 16 caractères au moins');
+   ```
+
+   Saisir la valeur `secret=` de l'adresse renvoyée dans une appli d'authentification. Comme la requête reste dans l'historique du SQL Editor, changer ensuite de méthode pour un vrai serveur (voir `web/README.md`).
+
+4. **Publier la page** : *GitHub › Settings › Secrets and variables › Actions › Variables* :
+   - `API_URL` = `https://VOTRE-PROJET.supabase.co/rest/v1`
+   - `API_KEY` = la clé publique `sb_publishable_…` (publique par nature : elle est aussi dans l'app)
+
+   puis *Actions › Page organisateur › Run workflow*. CORS : Supabase accepte toutes les origines, rien à régler.
+
+Compte organisateur de test (créé par le seed) : `lyon@example.org` / `foulala-dev-2026`.

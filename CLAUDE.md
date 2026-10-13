@@ -72,11 +72,11 @@ Les trois états de l'écran : présence envoyée, en attente de réseau, hors d
 ```
 db/        schema.sql, api.sql, organizer.sql, admin.sql, tests/*.sql → la source de vérité ; seed.sql (données de dev)
 server/    docker-compose (PostGIS+pg_cron, PostgREST, Caddy), docker-compose.dev.yml, Caddyfile, initdb/
-supabase/  adapter.sql (droits Supabase), README : base de TEST seulement (journal d'IP)
+supabase/  adapter.sql (droits Supabase), README : base de TEST seulement (journal d'IP), page web comprise
 app/       app Flutter participants (MVVM officiel de Flutter, voir app/README.md)
 web/       page organisateur et administration (#/admin) : Vite + TypeScript sans framework, Leaflet, publiée sur GitHub Pages (voir web/README.md)
 design/    tokens.json (couleurs par cause, typo), lien vers les maquettes
-docs/      méthode de comptage, vie privée, décisions
+docs/      architecture (test Supabase / production VPS, diagrammes), méthode de comptage, vie privée, décisions
 scripts/   db-test.sh
 ```
 
@@ -102,7 +102,7 @@ cd app && dart run tool/gen_tokens.dart
 cd web && npm install && npm run dev      # http://localhost:5173
 cd web && npm run build                   # vérifie les types et construit dist/
 
-# Supabase (tests) : script unique à coller dans le SQL Editor → supabase/build/setup.sql
+# Supabase (tests) : script unique à coller dans le SQL Editor → supabase/build/setup.sql (reset.sql pour repartir de zéro)
 ./scripts/supabase-bundle.sh
 
 # Tests SQL dans le conteneur de dev (sans psql local)

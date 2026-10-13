@@ -1,5 +1,5 @@
 import './style.css';
-import { session } from './api';
+import { IS_TEST_BACKEND, session } from './api';
 import { logoUrl } from './layout';
 import { loginView } from './views/login';
 import { listView } from './views/list';
@@ -20,6 +20,15 @@ fav.rel = 'icon';
 fav.type = 'image/svg+xml';
 fav.href = logoUrl;
 document.head.appendChild(fav);
+
+// Base de test : toujours visible, pour qu'aucun collectif ne s'en serve pour une vraie manif
+if (IS_TEST_BACKEND) {
+  const banner = document.createElement('p');
+  banner.className = 'test-banner';
+  banner.setAttribute('role', 'note');
+  banner.textContent = 'Version de test : base Supabase, comptes et manifs fictifs. Ne pas l\'utiliser pour une vraie manifestation.';
+  document.body.prepend(banner);
+}
 
 // Routes (hash, pour marcher sur GitHub Pages sans configuration) :
 //   organisateur   : #/connexion · #/ · #/nouvelle · #/manif/<id> · #/mot-de-passe

@@ -24,7 +24,7 @@ Le détail est dans [docs/vie-privee.md](docs/vie-privee.md) et [docs/methode-co
 | [`app/`](app) | App mobile Flutter (à venir) |
 | [`web/`](web) | Page organisateur (à venir) |
 | [`design/`](design) | Couleurs par cause, typographie |
-| [`docs/`](docs) | Méthode, vie privée, décisions |
+| [`docs/`](docs) | [Architecture](docs/architecture.md) (test et production, diagrammes), méthode, vie privée, décisions |
 
 ## Démarrer
 
