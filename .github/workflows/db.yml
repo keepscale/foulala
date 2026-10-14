@@ -24,14 +24,14 @@ jobs:
       PGUSER: postgres
       PGPASSWORD: postgres
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Tests SQL
         run: ./scripts/db-test.sh
 
   compose:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Valide docker-compose
         working-directory: server
         run: cp .env.example .env && docker compose config -q
