@@ -16,6 +16,34 @@ flutter analyze   # analyse statique
 
 Le HTTP en clair n'est autorisé qu'en debug, et seulement vers `10.0.2.2` et `localhost` (`android/app/src/debug/res/xml/network_security_config.xml`).
 
+## Distribuer un APK de test (Android, sans store)
+
+Pousser un tag `app-vX.Y.Z` : le workflow `.github/workflows/app-release.yml` construit un APK signé, branché sur la base de test Supabase, et le joint à une Release GitHub (préversion). Les testeurs le téléchargent depuis leur téléphone, ou le suivent avec Obtainium.
+
+```bash
+git tag app-v0.1.0 && git push origin app-v0.1.0
+```
+
+Prérequis dans *Settings › Secrets and variables › Actions* :
+
+- **Variables** : `API_URL` et `API_KEY`, les mêmes que pour la page organisateur ;
+- **Secrets** : `ANDROID_KEYSTORE_BASE64` (la clé de signature `.jks` encodée en base64) et `ANDROID_KEYSTORE_PASSWORD`. L'alias de la clé est `foulala`.
+
+**La clé de signature ne doit jamais être perdue ni changée** : un APK signé avec une autre clé ne s'installe pas par-dessus l'ancien, il faut désinstaller l'app et ses jetons disparaissent. Elle vit hors du dépôt, avec une copie de secours et son mot de passe dans un gestionnaire de mots de passe.
+
+Pour construire un APK signé en local, créer `android/key.properties` (ignoré par git) :
+
+```properties
+storePassword=…
+keyPassword=…
+keyAlias=foulala
+storeFile=C:/chemin/vers/foulala-upload.jks
+```
+
+Sans ce fichier, `flutter build apk --release` signe avec la clé de debug de la machine : l'APK ne peut pas mettre à jour une version de test déjà installée.
+
+Ces APK pointent vers Supabase, qui journalise les adresses IP : tests entre amis uniquement, jamais une vraie manif.
+
 ## Architecture
 
 Architecture officielle de Flutter (MVVM), voir `docs/decisions.md` :

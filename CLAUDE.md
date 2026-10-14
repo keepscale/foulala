@@ -113,7 +113,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T -e PGUSER
 
 Sous Windows, `.gitattributes` force les fins de ligne LF pour `*.sh`, `*.sql` et le Caddyfile : en CRLF, l'initialisation de la base échoue.
 
-La CI lance les tests SQL (`db.yml`) quand `db/` ou `server/` change, et construit la page organisateur (`web.yml`) quand `web/` ou `design/` change ; sur `main`, `web.yml` la publie sur GitHub Pages si la variable `API_URL` est définie.
+La CI lance les tests SQL (`db.yml`) quand `db/` ou `server/` change, et construit la page organisateur (`web.yml`) quand `web/` ou `design/` change ; sur `main`, `web.yml` la publie sur GitHub Pages si la variable `API_URL` est définie. Un tag `app-vX.Y.Z` lance `app-release.yml`, qui publie un APK de test signé (base Supabase) dans une Release GitHub (voir `app/README.md`).
 
 Variables du serveur (`server/.env`) : `JWT_SECRET` (32 caractères au moins, signe les jetons organisateurs) et `WEB_ORIGIN` (adresse de la page organisateur, seule origine autorisée par CORS).
 
