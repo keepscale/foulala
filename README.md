@@ -21,10 +21,11 @@ Le détail est dans [docs/vie-privee.md](docs/vie-privee.md) et [docs/methode-co
 |---|---|
 | [`db/`](db) | Schéma PostgreSQL + PostGIS, API, tests |
 | [`server/`](server) | Déploiement : PostgreSQL, PostgREST, Caddy (docker compose) |
-| [`app/`](app) | App mobile Flutter (à venir) |
-| [`web/`](web) | Page organisateur (à venir) |
+| [`supabase/`](supabase) | Base de test sur Supabase (tests uniquement : journal des adresses IP) |
+| [`app/`](app) | App mobile Flutter des participants, [APK de test](https://github.com/keepscale/foulala/releases) |
+| [`web/`](web) | Page organisateur et administration, [version de test](https://foulala.keepscale.fr/) |
 | [`design/`](design) | Couleurs par cause, typographie |
-| [`docs/`](docs) | [Architecture](docs/architecture.md) (test et production, diagrammes), méthode, vie privée, décisions |
+| [`docs/`](docs) | [Architecture](docs/architecture.md) (test et production, diagrammes), méthode, vie privée, décisions, [idées pour plus tard](docs/idees.md) |
 
 ## Démarrer
 

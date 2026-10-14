@@ -163,6 +163,8 @@ Gratuit pour les participants, toujours. Dons (Liberapay, Open Collective), subv
 6. Fausse marche de test avec des amis
 7. Avant toute vraie manif : politique de confidentialité, analyse d'impact (AIPD), méthode de comptage publiée
 
+Plus tard (pas prévu pour l'instant, ne pas lancer sans demande) : `docs/idees.md`, dont le fond de carte hors ligne par ville.
+
 ## Contexte marché
 
 Aucun équivalent sérieux. ProtestCount (iOS, 2023) fait un comptage basique, sans suivi ni réelle anonymisation. Les tentatives de comptage par les opérateurs (France, 2013) ou par capteurs Wi-Fi (Brésil, 2016) ont échoué faute de base légale ou de transparence. Mobilizon gère des événements militants sans comptage. **Nos atouts : code ouvert, méthode publiée, neutralité.** L'app doit rester utilisable par toutes les causes, sans parti pris.
