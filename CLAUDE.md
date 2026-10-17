@@ -123,6 +123,7 @@ Variables du serveur (`server/.env`) : `JWT_SECRET` (32 caractères au moins, si
 - Pas encore de migrations : tant que rien n'est en production, on modifie `schema.sql` directement. Ensuite, on passera à des fichiers `db/migrations/NNNN_description.sql`.
 - Commits courts en français, à l'impératif (« Ajoute le rôle organisateur »).
 - Code (noms de tables, variables) en anglais, commentaires et textes d'interface en français.
+- Licences : code en AGPL-3.0-or-later (`LICENSE`) avec une permission pour les boutiques d'applications (`LICENSE-STORES.md`), `docs/` en CC BY-SA 4.0, nom et logo réservés (`TRADEMARK.md`). Toute nouvelle dépendance doit être compatible avec l'AGPL.
 
 ## Design
 
@@ -160,7 +161,7 @@ Gratuit pour les participants, toujours. Dons (Liberapay, Open Collective), subv
 4. ✅ Page web organisateur : formulaire et tracé du parcours sur une carte OpenStreetMap (à publier : dépôt public + variable `API_URL`)
    ✅ Administration : pilotage, santé, modération, comptes des collectifs, journal (TOTP)
 5. Limite de débit en mémoire (en priorité sur `/rpc/login` et `/rpc/admin_login`), attestation d'appareil (Play Integrity, App Attest)
-6. Fausse marche de test avec des amis
+6. ✅ Fausse marche de test avec des amis
 7. Avant toute vraie manif : politique de confidentialité, analyse d'impact (AIPD), méthode de comptage publiée
 
 Plus tard (pas prévu pour l'instant, ne pas lancer sans demande) : `docs/idees.md`, dont le fond de carte hors ligne par ville.

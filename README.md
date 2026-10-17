@@ -42,3 +42,10 @@ docker compose up -d
 ## État
 
 Projet en cours de construction, pas encore utilisable en manif réelle.
+
+## Licence
+
+- **Code** : [GNU AGPL v3](LICENSE) ou toute version ultérieure. Une version modifiée, même hébergée sur un serveur, doit publier son code : chacun peut vérifier qu'elle tient les promesses de vie privée. Une [permission supplémentaire](LICENSE-STORES.md) autorise la distribution par l'App Store et Google Play.
+- **Documentation** (`docs/`) : [CC BY-SA 4.0](docs/LICENSE).
+- **Nom et logo** : réservés, voir [TRADEMARK.md](TRADEMARK.md).
+- **Polices** (`app/assets/fonts/`) : SIL Open Font License.
